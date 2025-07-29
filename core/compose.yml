@@ -1,6 +1,32 @@
-name: routing
+name: core
 
 services:
+  # Prometheus metrics
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - default
+      - immich
+
+  # Grafana visualization tool
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)
+      - traefik.http.routers.grafana.tls.certresolver=cloudflare
+
   # Traefik reverse proxy
   traefik:
     image: traefik:v3.4
@@ -25,13 +51,17 @@ services:
       - 80:80 # HTTP
       - 443:443 # HTTPS
     networks:
-      - pms
+      - default
       - immich
+      - pms
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - traefik-certs:/certs
 
 networks:
+  default:
+    driver: bridge
+    name: core
   pms:
     external: true
   immich:
@@ -39,4 +69,8 @@ networks:
 
 volumes:
   traefik-certs:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
     driver: local
