@@ -33,6 +33,8 @@ entryPoints:
           scheme: https
   websecure:
     address: :443
+  traefik:
+    address: :7000
 
 providers:
   docker:
