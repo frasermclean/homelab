@@ -3,6 +3,7 @@ global:
   sendAnonymousUsage: true
 
 api:
+  dashboard: true
   insecure: true
   disableDashboardAd: true
 
@@ -36,6 +37,11 @@ entryPoints:
 providers:
   docker:
     exposedByDefault: false
+
+tls:
+  options:
+    default:
+      sniStrict: true
 
 certificatesResolvers:
   cloudflare:
