@@ -45,19 +45,7 @@ services:
     image: traefik:v3.4
     restart: unless-stopped
     environment:
-      - TRAEFIK_API_INSECURE=true
-      - TRAEFIK_LOG_LEVEL=INFO
-      - TRAEFIK_ENTRYPOINTS_TRAEFIK_ADDRESS=:7000
-      - TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80
-      - TRAEFIK_ENTRYPOINTS_WEB_ASDEFAULT=true
-      - TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_TO=websecure
-      - TRAEFIK_ENTRYPOINTS_WEB_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME=https
-      - TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS=:443
-      - TRAEFIK_ENTRYPOINTS_WEBSECURE_ASDEFAULT=true
-      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
-      - TRAEFIK_CERTIFICATESRESOLVERS_CLOUDFLARE_ACME_DNSCHALLENGE_PROVIDER=cloudflare
-      - TRAEFIK_CERTIFICATESRESOLVERS_CLOUDFLARE_ACME_EMAIL=${ADMIN_EMAIL}
-      - TRAEFIK_CERTIFICATESRESOLVERS_CLOUDFLARE_ACME_STORAGE=/certs/acme.json
+      - TZ=${TZ}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     ports:
       - 7000:7000 # Dashboard
@@ -68,7 +56,9 @@ services:
       - immich
       - pms
     volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock
+      - /var/log/traefik:/var/log/traefik
       - traefik-certs:/certs
 
 networks:
