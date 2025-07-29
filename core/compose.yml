@@ -14,6 +14,19 @@ services:
       - default
       - immich
 
+  # Loki for log aggregation
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki.yml:/etc/loki/local-config.yaml:ro
+    networks:
+      - default
+      - immich
+
   # Grafana visualization tool
   grafana:
     image: grafana/grafana:latest
