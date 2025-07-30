@@ -40,6 +40,17 @@ providers:
   docker:
     exposedByDefault: false
 
+metrics:
+  prometheus:
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+    addEntryPointsLabels: true
+    addRoutersLabels: true
+    addServicesLabels: true
+
 tls:
   options:
     default:
