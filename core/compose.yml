@@ -56,23 +56,6 @@ services:
       - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
       - traefik.http.services.adguardhome.loadbalancer.server.port=80
 
-  # AdGuard Home syncronization service
-  adguardhome-sync:
-    image: ghcr.io/bakito/adguardhome-sync
-    restart: unless-stopped
-    environment:
-      - ORIGIN_URL=https://adguard.${DOMAIN}
-      - ORIGIN_USERNAME=${ADGUARDHOME_USERNAME}
-      - ORIGIN_PASSWORD=${ADGUARDHOME_PASSWORD}
-      - REPLICA1_URL=http://192.168.1.4
-      - REPLICA1_USERNAME=${ADGUARDHOME_USERNAME}
-      - REPLICA1_PASSWORD=${ADGUARDHOME_PASSWORD}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.adguardhome-sync.rule=Host(`aghs.${DOMAIN}`)
-      - traefik.http.routers.adguardhome-sync.tls.certresolver=cloudflare
-      - traefik.http.services.adguardhome-sync.loadbalancer.server.port=8080
-
   # Traefik reverse proxy
   traefik:
     image: traefik:v3.4
