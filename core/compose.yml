@@ -40,6 +40,21 @@ services:
       - traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)
       - traefik.http.routers.grafana.tls.certresolver=cloudflare
 
+  adguardhome:
+    image: adguard/adguardhome
+    restart: unless-stopped
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    volumes:
+      - adguardhome-config:/opt/adguardhome/conf
+      - adguardhome-work:/opt/adguardhome/work
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
+      - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
+      - traefik.http.services.adguardhome.loadbalancer.server.port=3000
+
   # Traefik reverse proxy
   traefik:
     image: traefik:v3.4
@@ -77,4 +92,8 @@ volumes:
   prometheus-data:
     driver: local
   grafana-data:
+    driver: local
+  adguardhome-config:
+    driver: local
+  adguardhome-work:
     driver: local
