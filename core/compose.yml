@@ -53,7 +53,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
       - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
-      - traefik.http.services.adguardhome.loadbalancer.server.port=3000
+      - traefik.http.services.adguardhome.loadbalancer.server.port=80
 
   # Traefik reverse proxy
   traefik:
