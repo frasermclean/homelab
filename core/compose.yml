@@ -67,6 +67,11 @@ services:
       - REPLICA1_URL=http://192.168.1.4
       - REPLICA1_USERNAME=${ADGUARDHOME_USERNAME}
       - REPLICA1_PASSWORD=${ADGUARDHOME_PASSWORD}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adguardhome-sync.rule=Host(`aghs.${DOMAIN}`)
+      - traefik.http.routers.adguardhome-sync.tls.certresolver=cloudflare
+      - traefik.http.services.adguardhome-sync.loadbalancer.server.port=8080
 
   # Traefik reverse proxy
   traefik:
