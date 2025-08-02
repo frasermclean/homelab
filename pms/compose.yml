@@ -167,6 +167,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
       - traefik.http.routers.lidarr.tls.certresolver=cloudflare
+      - homepage.name=Lidarr
+      - homepage.icon=lidarr
+      - homepage.href=https://lidarr.${DOMAIN}
+      - homepage.widget.type=lidarr
+      - homepage.widget.url=http://pms-lidarr:8686
+      - homepage.widget.key=${LIDARR_API_KEY}
 
   # Prowlarr indexer manager
   prowlarr:
