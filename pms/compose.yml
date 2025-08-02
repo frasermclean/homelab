@@ -4,6 +4,7 @@ services:
   # qBittorrent bittorrent client
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: pms-qbittorrent
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -32,6 +33,7 @@ services:
   # SABnzbd usenet downloader
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: pms-sabnzbd
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -57,6 +59,7 @@ services:
   # Postgres database
   postgres:
     image: postgres:14
+    container_name: pms-postgres
     restart: unless-stopped
     environment:
       - POSTGRES_PASSWORD=${ADMIN_PASSWORD}
@@ -67,6 +70,7 @@ services:
   # pgAdmin web interface for Postgres
   pgadmin:
     image: dpage/pgadmin4:latest
+    container_name: pms-pgadmin
     restart: unless-stopped
     environment:
       - PGADMIN_DEFAULT_EMAIL=${ADMIN_EMAIL}
@@ -83,6 +87,7 @@ services:
   # Sonarr TV show manager
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
+    container_name: pms-sonarr
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -105,6 +110,7 @@ services:
   # Radarr movie manager
   radarr:
     image: lscr.io/linuxserver/radarr:latest
+    container_name: pms-radarr
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -127,6 +133,7 @@ services:
   # Lidarr music manager
   lidarr:
     image: lscr.io/linuxserver/lidarr:latest
+    container_name: pms-lidarr
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -149,6 +156,7 @@ services:
   # Prowlarr indexer manager
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
+    container_name: pms-prowlarr
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -166,6 +174,7 @@ services:
   # Plex media server
   plex:
     image: lscr.io/linuxserver/plex:latest
+    container_name: pms-plex
     restart: unless-stopped
     network_mode: host
     environment:
