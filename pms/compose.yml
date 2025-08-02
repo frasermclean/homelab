@@ -20,6 +20,14 @@ services:
       - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN}`)
       - traefik.http.routers.qbittorrent.tls.certresolver=cloudflare
       - traefik.http.services.qbittorrent.loadbalancer.server.port=8080
+      - homepage.group=Downloaders
+      - homepage.name=qBittorrent
+      - homepage.icon=qbittorrent
+      - homepage.href=https://qbittorrent.${DOMAIN}
+      - homepage.widget.type=qbittorrent
+      - homepage.widget.url=https://qbittorrent.${DOMAIN}
+      - homepage.widget.username=${QBITTORRENT_USERNAME}
+      - homepage.widget.password=${QBITTORRENT_PASSWORD}
 
   # SABnzbd usenet downloader
   sabnzbd:

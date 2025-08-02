@@ -43,6 +43,9 @@ services:
   # Homepage personal dashboard
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
+    networks:
+      - default
+      - pms
     volumes:
       - ./homepage:/app/config
       - /var/log/homepage:/var/log/homepage
