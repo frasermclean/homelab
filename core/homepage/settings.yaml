@@ -1,3 +1,9 @@
 title: Roach Services
+description: Collection of services running on my homelab.
 language: en
-logPath: /var/log/homepage
+logpath: /var/log/homepage
+
+background:
+  image: https://images.pexels.com/photos/1629236/pexels-photo-1629236.jpeg
+
+cardBlur: xs
