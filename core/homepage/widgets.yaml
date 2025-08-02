@@ -5,6 +5,9 @@
     text_size: 3xl
     text: Roach Services
 
+- logo:
+    icon: /images/roach-carbot-128.png
+
 - datetime:
     text_size: xl
     format:
