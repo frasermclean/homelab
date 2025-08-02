@@ -176,12 +176,13 @@ services:
     image: lscr.io/linuxserver/plex:latest
     container_name: pms-plex
     restart: unless-stopped
-    network_mode: host
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
       - VERSION=docker
+    ports:
+      - 32400:32400
     volumes:
       - plex-config:/config
       - ${HOST_MEDIA}:/data/media
