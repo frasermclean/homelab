@@ -104,8 +104,16 @@ services:
       - sabnzbd
     labels:
       - traefik.enable=true
-      - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
-      - traefik.http.routers.sonarr.tls.certresolver=cloudflare
+      - traefik.http.routers.pms-sonarr.rule=Host(`sonarr.${DOMAIN}`)
+      - traefik.http.routers.pms-sonarr.tls.certresolver=cloudflare
+      - traefik.http.services.pms-sonarr.loadbalancer.server.port=8989
+      - homepage.group=Media
+      - homepage.name=Sonarr
+      - homepage.icon=sonarr
+      - homepage.href=https://sonarr.${DOMAIN}
+      - homepage.widget.type=sonarr
+      - homepage.widget.url=http://pms-sonarr:8989
+      - homepage.widget.key=${SONARR_API_KEY}
 
   # Radarr movie manager
   radarr:
