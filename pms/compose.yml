@@ -167,6 +167,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
       - traefik.http.routers.lidarr.tls.certresolver=cloudflare
+      - homepage.group=Media
       - homepage.name=Lidarr
       - homepage.icon=lidarr
       - homepage.href=https://lidarr.${DOMAIN}
