@@ -43,6 +43,7 @@ services:
   # Homepage personal dashboard
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
+    restart: unless-stopped
     networks:
       - default
       - pms
