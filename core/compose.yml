@@ -43,6 +43,7 @@ services:
   # Homepage personal dashboard
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
+    container_name: core-homepage
     restart: unless-stopped
     networks:
       - default
@@ -56,13 +57,14 @@ services:
       - LOG_TARGETS=stdout
     labels:
       - traefik.enable=true
-      - traefik.http.routers.homepage.rule=Host(`homepage.${DOMAIN}`)
-      - traefik.http.routers.homepage.tls.certresolver=cloudflare
-      - traefik.http.services.homepage.loadbalancer.server.port=3000
+      - traefik.http.routers.core-homepage.rule=Host(`homepage.${DOMAIN}`)
+      - traefik.http.routers.core-homepage.tls.certresolver=cloudflare
+      - traefik.http.services.core-homepage.loadbalancer.server.port=3000
 
   # AdGuard Home for DNS filtering
   adguardhome:
     image: adguard/adguardhome
+    container_name: core-adguardhome
     restart: unless-stopped
     ports:
       - 53:53/tcp
@@ -72,22 +74,22 @@ services:
       - adguardhome-work:/opt/adguardhome/work
     labels:
       - traefik.enable=true
-      - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
-      - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
-      - traefik.http.services.adguardhome.loadbalancer.server.port=80
+      - traefik.http.routers.core-adguardhome.rule=Host(`adguard.${DOMAIN}`)
+      - traefik.http.routers.core-adguardhome.tls.certresolver=cloudflare
+      - traefik.http.services.core-adguardhome.loadbalancer.server.port=80
       - homepage.group=Networking
       - homepage.name=AdGuard Home
       - homepage.icon=adguard-home
       - homepage.href=https://adguard.${DOMAIN}
       - homepage.widget.type=adguard
-      - homepage.widget.url=https://adguard.${DOMAIN}
+      - homepage.widget.url=http://core-adguardhome
       - homepage.widget.username=${ADGUARDHOME_USERNAME}
       - homepage.widget.password=${ADGUARDHOME_PASSWORD}
 
   # Traefik reverse proxy
   traefik:
     image: traefik:v3.4
-    container_name: traefik
+    container_name: core-traefik
     restart: unless-stopped
     environment:
       - TZ=${TZ}
@@ -111,7 +113,7 @@ services:
       - homepage.icon=traefik
       - homepage.href=https://traefik.${DOMAIN}
       - homepage.widget.type=traefik
-      - homepage.widget.url=https://traefik.${DOMAIN}
+      - homepage.widget.url=http://core-traefik:7000
 
 networks:
   default:
