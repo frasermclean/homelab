@@ -43,9 +43,9 @@ services:
   # Homepage personal dashboard
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
     volumes:
       - ./homepage:/app/config
+      - /var/log/homepage:/var/log/homepage
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=homepage.${DOMAIN}
@@ -70,6 +70,14 @@ services:
       - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
       - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
       - traefik.http.services.adguardhome.loadbalancer.server.port=80
+      - homepage.group=Networking
+      - homepage.name=AdGuard Home
+      - homepage.icon=adguard-home
+      - homepage.href=https://adguard.${DOMAIN}
+      - homepage.widget.type=adguard
+      - homepage.widget.url=https://adguard.${DOMAIN}
+      - homepage.widget.username=${ADGUARDHOME_USERNAME}
+      - homepage.widget.password=${ADGUARDHOME_PASSWORD}
 
   # Traefik reverse proxy
   traefik:
