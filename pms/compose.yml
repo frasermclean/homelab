@@ -137,6 +137,13 @@ services:
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
       - traefik.http.routers.radarr.tls.certresolver=cloudflare
+      - homepage.group=Media
+      - homepage.name=Radarr
+      - homepage.icon=radarr
+      - homepage.href=https://radarr.${DOMAIN}
+      - homepage.widget.type=radarr
+      - homepage.widget.url=http://pms-radarr:7878
+      - homepage.widget.key=${RADARR_API_KEY}
 
   # Lidarr music manager
   lidarr:
