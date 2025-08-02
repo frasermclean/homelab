@@ -45,7 +45,7 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     volumes:
-      - homepage-config:/app/config
+      - /etc/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=homepage.${DOMAIN}
@@ -106,8 +106,6 @@ volumes:
   adguardhome-config:
     driver: local
   adguardhome-work:
-    driver: local
-  homepage-config:
     driver: local
   traefik-certs:
     driver: local
