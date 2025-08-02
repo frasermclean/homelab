@@ -40,6 +40,21 @@ services:
       - traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)
       - traefik.http.routers.grafana.tls.certresolver=cloudflare
 
+  # Homepage personal dashboard
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    volumes:
+      - homepage-config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=homepage.${DOMAIN}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`homepage.${DOMAIN}`)
+      - traefik.http.routers.homepage.tls.certresolver=cloudflare
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+
   # AdGuard Home for DNS filtering
   adguardhome:
     image: adguard/adguardhome
@@ -88,13 +103,15 @@ networks:
     external: true
 
 volumes:
+  adguardhome-config:
+    driver: local
+  adguardhome-work:
+    driver: local
+  homepage-config:
+    driver: local
   traefik-certs:
     driver: local
   prometheus-data:
     driver: local
   grafana-data:
-    driver: local
-  adguardhome-config:
-    driver: local
-  adguardhome-work:
     driver: local
