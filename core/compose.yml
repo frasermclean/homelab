@@ -47,6 +47,7 @@ services:
     restart: unless-stopped
     networks:
       - default
+      - bridge
       - pms
     volumes:
       - ./homepage/config:/app/config

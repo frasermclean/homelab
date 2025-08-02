@@ -1,0 +1,10 @@
+- Core:
+    - Portainer:
+        description: Container management platform
+        icon: portainer
+        href: http://roach:9000
+        widget:
+          type: portainer
+          url: http://portainer:9000
+          env: 4
+          key: ptr_3pBP+b/tjVGBeeAuZ7ObL2vzWVY6RaZerl4JKkcEzlc=
