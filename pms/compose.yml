@@ -198,7 +198,7 @@ services:
       - homepage.href=https://plex.${DOMAIN}
       - homepage.widget.type=plex
       - homepage.widget.url=http://pms-plex:32400
-      - homepage.widget.key=${PLEX_KEY}
+      - homepage.widget.key=${PLEX_SERVER_TOKEN}
 
 networks:
   default:
