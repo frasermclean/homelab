@@ -46,6 +46,13 @@ services:
       - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)
       - traefik.http.routers.sabnzbd.tls.certresolver=cloudflare
       - traefik.http.services.sabnzbd.loadbalancer.server.port=8080
+      - homepage.group=Downloaders
+      - homepage.name=SABnzbd
+      - homepage.icon=sabnzbd
+      - homepage.href=https://sabnzbd.${DOMAIN}
+      - homepage.widget.type=sabnzbd
+      - homepage.widget.url=https://sabnzbd.${DOMAIN}
+      - homepage.widget.key=${SABNZBD_API_KEY}
 
   # Postgres database
   postgres:
