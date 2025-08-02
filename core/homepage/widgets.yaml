@@ -1,0 +1,22 @@
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/info-widgets/
+
+- greeting:
+    text_size: 3xl
+    text: Roach Services
+
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+      hourCycle: h23
+
+- resources:
+    cpu: true
+    memory: true
+    disk: /
+
+- search:
+    provider: bing
+    target: _blank
+    showSearchSuggestions: true

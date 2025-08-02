@@ -1,9 +1,13 @@
+# General homepage settings: https://gethomepage.dev/configs/settings/
 title: Roach Services
 description: Collection of services running on my homelab.
 language: en
-logpath: /var/log/homepage
 
+# Appearance settings
+color: slate
+theme: dark
 background:
   image: https://images.pexels.com/photos/1629236/pexels-photo-1629236.jpeg
-
+  opacity: 55
 cardBlur: xs
+statusStyle: dot
