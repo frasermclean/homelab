@@ -39,6 +39,7 @@ services:
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
+      - server-data:/data
     depends_on:
       - database
       - cache
@@ -72,6 +73,8 @@ networks:
 volumes:
   database-data:
     driver: local
+  server-data:
+    name: immich-server-data
   model-cache:
     driver: local
   cache-data:
