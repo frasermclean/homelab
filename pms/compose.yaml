@@ -1,0 +1,254 @@
+name: pms
+
+services:
+  # qBittorrent bittorrent client
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: pms-qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - TORRENTING_PORT=54321
+    ports:
+      - 54321:54321
+    volumes:
+      - ${HOST_APPDATA}/qbittorrent:/config
+      - ${HOST_DOWNLOADS}:/data/downloads
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-qbittorrent.rule=Host(`qbittorrent.${DOMAIN}`)
+      - traefik.http.routers.pms-qbittorrent.tls.certresolver=cloudflare
+      - traefik.http.services.pms-qbittorrent.loadbalancer.server.port=8080
+      - homepage.group=Downloaders
+      - homepage.name=qBittorrent
+      - homepage.description=BitTorrent client
+      - homepage.icon=qbittorrent
+      - homepage.href=https://qbittorrent.${DOMAIN}
+      - homepage.widget.type=qbittorrent
+      - homepage.widget.url=http://pms-qbittorrent:8080
+      - homepage.widget.username=${QBITTORRENT_USERNAME}
+      - homepage.widget.password=${QBITTORRENT_PASSWORD}
+
+  # SABnzbd usenet downloader
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: pms-sabnzbd
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/sabnzbd:/config
+      - ${HOST_DOWNLOADS}:/data/downloads
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)
+      - traefik.http.routers.pms-sabnzbd.tls.certresolver=cloudflare
+      - traefik.http.services.pms-sabnzbd.loadbalancer.server.port=8080
+      - homepage.group=Downloaders
+      - homepage.name=SABnzbd
+      - homepage.description=Usenet download manager
+      - homepage.icon=sabnzbd
+      - homepage.href=https://sabnzbd.${DOMAIN}
+      - homepage.widget.type=sabnzbd
+      - homepage.widget.url=http://pms-sabnzbd:8080
+      - homepage.widget.key=${SABNZBD_API_KEY}
+
+  # Sonarr TV show manager
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: pms-sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/sonarr:/config
+      - ${HOST_DOWNLOADS}:/data/downloads
+      - ${HOST_MEDIA}/tv:/data/media/tv
+    depends_on:
+      - qbittorrent
+      - sabnzbd
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-sonarr.rule=Host(`sonarr.${DOMAIN}`)
+      - traefik.http.routers.pms-sonarr.tls.certresolver=cloudflare
+      - traefik.http.services.pms-sonarr.loadbalancer.server.port=8989
+      - homepage.group=Media
+      - homepage.name=Sonarr
+      - homepage.description=TV series manager
+      - homepage.icon=sonarr
+      - homepage.href=https://sonarr.${DOMAIN}
+      - homepage.widget.type=sonarr
+      - homepage.widget.url=http://pms-sonarr:8989
+      - homepage.widget.key=${SONARR_API_KEY}
+
+  # Radarr movie manager
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: pms-radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/radarr:/config
+      - ${HOST_DOWNLOADS}:/data/downloads
+      - ${HOST_MEDIA}/movies:/data/media/movies
+    depends_on:
+      - qbittorrent
+      - sabnzbd
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-radarr.rule=Host(`radarr.${DOMAIN}`)
+      - traefik.http.routers.pms-radarr.tls.certresolver=cloudflare
+      - homepage.group=Media
+      - homepage.name=Radarr
+      - homepage.description=Movie manager
+      - homepage.icon=radarr
+      - homepage.href=https://radarr.${DOMAIN}
+      - homepage.widget.type=radarr
+      - homepage.widget.url=http://pms-radarr:7878
+      - homepage.widget.key=${RADARR_API_KEY}
+
+  # Lidarr music manager
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: pms-lidarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/lidarr:/config
+      - ${HOST_DOWNLOADS}:/data/downloads
+      - ${HOST_MEDIA}/music:/data/media/music
+    depends_on:
+      - qbittorrent
+      - sabnzbd
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-lidarr.rule=Host(`lidarr.${DOMAIN}`)
+      - traefik.http.routers.pms-lidarr.tls.certresolver=cloudflare
+      - homepage.group=Media
+      - homepage.name=Lidarr
+      - homepage.description=Music manager
+      - homepage.icon=lidarr
+      - homepage.href=https://lidarr.${DOMAIN}
+      - homepage.widget.type=lidarr
+      - homepage.widget.url=http://pms-lidarr:8686
+      - homepage.widget.key=${LIDARR_API_KEY}
+
+  # Prowlarr indexer manager
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: pms-prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/prowlarr:/config
+    depends_on:
+      - qbittorrent
+      - sabnzbd
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-prowlarr.rule=Host(`prowlarr.${DOMAIN}`)
+      - traefik.http.routers.pms-prowlarr.tls.certresolver=cloudflare
+      - homepage.group=Downloaders
+      - homepage.name=Prowlarr
+      - homepage.description=Indexer manager
+      - homepage.icon=prowlarr
+      - homepage.href=https://prowlarr.${DOMAIN}
+      - homepage.widget.type=prowlarr
+      - homepage.widget.url=http://pms-prowlarr:9696
+      - homepage.widget.key=${PROWLARR_API_KEY}
+
+  # Overseerr media discovery and request management
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: pms-overseerr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/overseerr:/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.overseerr.rule=Host(`overseerr.${DOMAIN}`)
+      - traefik.http.routers.overseerr.tls.certresolver=cloudflare
+      - homepage.group=Media
+      - homepage.name=Overseerr
+      - homepage.description=Media request management
+      - homepage.icon=overseerr
+      - homepage.href=https://overseerr.${DOMAIN}
+      - homepage.widget.type=overseerr
+      - homepage.widget.url=http://pms-overseerr:5055
+      - homepage.widget.key=${OVERSEERR_API_KEY}
+
+  # Plex media server
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: pms-plex
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=docker
+    ports:
+      - 32400:32400
+    volumes:
+      - ${HOST_APPDATA}/plex:/config
+      - ${HOST_MEDIA}:/data/media
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pms-plex.rule=Host(`plex.${DOMAIN}`)
+      - traefik.http.routers.pms-plex.tls.certresolver=cloudflare
+      - traefik.http.services.pms-plex.loadbalancer.server.port=32400
+      - homepage.group=Media
+      - homepage.name=Plex
+      - homepage.description=Media server
+      - homepage.icon=plex
+      - homepage.href=https://plex.${DOMAIN}
+      - homepage.widget.type=plex
+      - homepage.widget.url=http://pms-plex:32400
+      - homepage.widget.key=${PLEX_SERVER_TOKEN}
+
+  # Tautulli media server monitoring
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: pms-tautulli
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${HOST_APPDATA}/tautulli:/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tautulli.rule=Host(`tautulli.${DOMAIN}`)
+      - traefik.http.routers.tautulli.tls.certresolver=cloudflare
+      - homepage.group=Media
+      - homepage.name=Tautulli
+      - homepage.description=Media server monitoring
+      - homepage.icon=tautulli
+      - homepage.href=https://tautulli.${DOMAIN}
+      - homepage.widget.type=tautulli
+      - homepage.widget.url=http://pms-tautulli:8181
+      - homepage.widget.key=${TAUTULLI_API_KEY}
+
+networks:
+  default:
+    name: pms
