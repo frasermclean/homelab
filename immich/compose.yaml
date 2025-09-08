@@ -21,6 +21,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: redis-cli ping || exit 1
+    volumes:
+      - cache-data:/data
 
   # Immich server
   server:
@@ -72,3 +74,5 @@ volumes:
     driver: local
   model-cache:
     driver: local
+  cache-data:
+    name: immich-cache-data
