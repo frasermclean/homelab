@@ -48,7 +48,7 @@ services:
         condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_CACHE__HOST=cache
+      - AUTHENTIK_REDIS__HOST=cache
       - AUTHENTIK_POSTGRESQL__HOST=database
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
@@ -86,10 +86,10 @@ services:
         condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_CACHE__HOST=cache
+      - AUTHENTIK_REDIS__HOST=cache
       - AUTHENTIK_POSTGRESQL__HOST=database
-      - AUTHENTIK_POSTGRESQL__USER=authentik
-      - AUTHENTIK_POSTGRESQL__NAME=authentik
+      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
       - AUTHENTIK_EMAIL__HOST=smtp.fastmail.com
       - AUTHENTIK_EMAIL__PORT=465
