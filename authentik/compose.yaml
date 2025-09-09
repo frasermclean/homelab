@@ -10,6 +10,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-authentik}
       POSTGRES_USER: ${POSTGRES_USER:-authentik}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?:database password required}
+    networks:
+      - default
+      - core
     volumes:
       - ${HOST_APPDATA}/authentik/database:/var/lib/postgresql/data
     healthcheck:
@@ -54,6 +57,9 @@ services:
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
       - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+    networks:
+      - default
+      - core
     volumes:
       - ${HOST_APPDATA}/authentik/media:/media
       - ${HOST_APPDATA}/authentik/templates:/templates
@@ -108,6 +114,8 @@ networks:
   default:
     name: authentik
     driver: bridge
+  core:
+    external: true
 
 volumes:
   cache-data:
