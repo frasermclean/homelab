@@ -8,11 +8,6 @@ services:
     restart: unless-stopped
     command: server
     user: ${PUID}:${PGID}
-    depends_on:
-      database:
-        condition: service_healthy
-      cache:
-        condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
       - AUTHENTIK_REDIS__HOST=core-redis
@@ -50,11 +45,6 @@ services:
     restart: unless-stopped
     command: worker
     user: ${PUID}:${PGID}
-    depends_on:
-      database:
-        condition: service_healthy
-      cache:
-        condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
       - AUTHENTIK_REDIS__HOST=core-redis
