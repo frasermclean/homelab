@@ -54,9 +54,6 @@ services:
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
       - AUTHENTIK_ERROR_REPORTING__ENABLED=true
-    networks:
-      - default
-      - core
     volumes:
       - ${HOST_APPDATA}/authentik/media:/media
       - ${HOST_APPDATA}/authentik/templates:/templates
