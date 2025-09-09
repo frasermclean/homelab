@@ -1,0 +1,259 @@
+name: core
+
+services:
+  # Homepage personal dashboards
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    networks:
+      - default
+      - pms
+      - immich
+    volumes:
+      - ${HOST_APPDATA}/homepage/config:/app/config
+      - ${HOST_APPDATA}/homepage/images:/app/public/images
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.homepage.tls.certresolver=cloudflare
+      - traefik.http.routers.homepage.middlewares=authentik@file
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+
+  # AdGuard Home for DNS filtering
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    restart: unless-stopped
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+    volumes:
+      - ${HOST_APPDATA}/adguardhome/conf:/opt/adguardhome/conf
+      - ${HOST_APPDATA}/adguardhome/work:/opt/adguardhome/work
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
+      - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
+      - traefik.http.services.adguardhome.loadbalancer.server.port=80
+      - homepage.group=Core
+      - homepage.name=AdGuard Home
+      - homepage.description=Ad Blocking and DNS filtering
+      - homepage.icon=adguard-home
+      - homepage.href=https://adguard.${DOMAIN}
+      - homepage.widget.type=adguard
+      - homepage.widget.url=http://adguardhome
+      - homepage.widget.username=${ADGUARDHOME_USERNAME}
+      - homepage.widget.password=${ADGUARDHOME_PASSWORD}
+
+  # Traefik reverse proxy
+  traefik:
+    image: traefik:v3.5
+    container_name: traefik
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
+    networks:
+      - default
+      - pms
+      - immich
+    ports:
+      - 7000:7000 # Dashboard
+      - 80:80 # HTTP
+      - 443:443 # HTTPS
+    volumes:
+      - ${HOST_APPDATA}/traefik:/etc/traefik
+      - /var/log/traefik:/var/log/traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.tls.certresolver=cloudflare
+      - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,authentik@file
+      - homepage.group=Core
+      - homepage.description=Reverse proxy
+      - homepage.name=Traefik
+      - homepage.icon=traefik
+      - homepage.href=https://traefik.${DOMAIN}
+      - homepage.widget.type=traefik
+      - homepage.widget.url=http://traefik:7000
+
+  # Docker socket proxy
+  socket-proxy:
+    image: lscr.io/linuxserver/socket-proxy:latest
+    container_name: core-socket-proxy
+    restart: unless-stopped
+    environment:
+      - CONTAINERS=1
+      - EVENTS=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    read_only: true
+    tmpfs:
+      - /run
+
+  # PostgreSQL database service
+  postgres:
+    image: postgres:16
+    container_name: core-postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    networks:
+      - default
+      - pms
+    volumes:
+      - ${HOST_APPDATA}/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  # pgAdmin web interface for Postgres
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ${HOST_APPDATA}/pgadmin/config/config_local.py:/pgadmin4/config_local.py:ro
+      - ${HOST_APPDATA}/pgadmin/data:/var/lib/pgadmin
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
+      - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
+
+  # Redis cache service
+  redis:
+    image: redis:alpine
+    container_name: core-redis
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - redis-data:/data
+
+  # Authentik web server
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2025.8.1
+    container_name: core-authentik-server
+    restart: unless-stopped
+    command: server
+    user: ${PUID}:${PGID}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
+      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_POSTGRESQL__HOST=postgres
+      - AUTHENTIK_POSTGRESQL__USER=${AUTHENTIK_POSTGRES_USER}
+      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRES_DATABASE}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_POSTGRES_PASSWORD}
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+    volumes:
+      - ${HOST_APPDATA}/authentik/media:/media
+      - ${HOST_APPDATA}/authentik/templates:/templates
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authentik-server.rule=Host(`auth.${DOMAIN}`)
+      - traefik.http.routers.authentik-server.tls.certresolver=cloudflare
+      - traefik.http.services.authentik-server.loadbalancer.server.port=9000
+      - homepage.group=Core
+      - homepage.name=Authentik
+      - homepage.description=Identity Provider / SSO
+      - homepage.icon=authentik
+      - homepage.href=https://auth.${DOMAIN}
+      - homepage.widget.type=authentik
+      - homepage.widget.version=2
+      - homepage.widget.url=http://core-authentik-server:9000
+      - homepage.widget.key=${AUTHENTIK_API_TOKEN}
+
+  # Authentik worker service
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2025.8.1
+    container_name: core-authentik-worker
+    restart: unless-stopped
+    command: worker
+    user: ${PUID}:${PGID}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - AUTHENTIK_SECRET_KEY=${AUTHENTIK_SECRET_KEY}
+      - AUTHENTIK_REDIS__HOST=redis
+      - AUTHENTIK_POSTGRESQL__HOST=postgres
+      - AUTHENTIK_POSTGRESQL__USER=${AUTHENTIK_POSTGRES_USER}
+      - AUTHENTIK_POSTGRESQL__NAME=${AUTHENTIK_POSTGRES_DATABASE}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_POSTGRES_PASSWORD}
+      - AUTHENTIK_EMAIL__HOST=smtp.fastmail.com
+      - AUTHENTIK_EMAIL__PORT=465
+      - AUTHENTIK_EMAIL__USERNAME=${AUTHENTIK_EMAIL_USERNAME}
+      - AUTHENTIK_EMAIL__PASSWORD=${AUTHENTIK_EMAIL_PASSWORD}
+      - AUTHENTIK_EMAIL__USE_SSL=true
+      - AUTHENTIK_EMAIL__TIMEOUT=10
+      - AUTHENTIK_EMAIL__FROM=${AUTHENTIK_EMAIL_FROM}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOST_APPDATA}/authentik/media:/media
+      - ${HOST_APPDATA}/authentik/certs:/certs
+      - ${HOST_APPDATA}/authentik/templates:/templates
+
+  # Backrest backup solution
+  backrest:
+    image: garethgeorge/backrest:latest
+    container_name: core-backrest
+    restart: unless-stopped
+    volumes:
+      - ${HOST_APPDATA}/backrest/data:/data
+      - ${HOST_APPDATA}/backrest/config:/config
+      - ${HOST_APPDATA}/backrest/cache:/cache
+      - ${HOST_APPDATA}/backrest/tmp:/tmp
+      - ${HOST_APPDATA}:/share/AppData # Mount local paths to backup
+    environment:
+      - BACKREST_DATA=/data
+      - BACKREST_CONFIG=/config/config.json
+      - XDG_CACHE_HOME=/cache
+      - TMPDIR=/tmp
+      - TZ=${TZ}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN}`)
+      - traefik.http.routers.backrest.tls.certresolver=cloudflare
+      - traefik.http.services.backrest.loadbalancer.server.port=9898
+
+networks:
+  default:
+    driver: bridge
+    name: core
+  pms:
+    external: true
+  immich:
+    external: true
+
+volumes:
+  portainer-data:
+    driver: local
+  redis-data:
+    driver: local
