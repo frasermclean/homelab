@@ -9,10 +9,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-authentik}
       POSTGRES_USER: ${POSTGRES_USER:-authentik}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?:database password required}
-    networks:
-      - default
-      - core
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?database password required}
     volumes:
       - ${HOST_APPDATA}/authentik/database:/var/lib/postgresql/data
     healthcheck:
@@ -114,8 +111,6 @@ networks:
   default:
     name: authentik
     driver: bridge
-  core:
-    external: true
 
 volumes:
   cache-data:

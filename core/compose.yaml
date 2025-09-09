@@ -60,6 +60,7 @@ services:
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     networks:
       - default
+      - authentik
       - pms
       - immich
     ports:
@@ -162,6 +163,8 @@ networks:
   default:
     driver: bridge
     name: core
+  authentik:
+    external: true
   pms:
     external: true
   immich:
