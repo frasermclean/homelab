@@ -36,9 +36,6 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_DATABASE_NAME=${POSTGRES_DB}
       - REDIS_HOSTNAME=cache
-    networks:
-      - core
-      - default
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
@@ -72,8 +69,6 @@ networks:
   default:
     name: immich
     driver: bridge
-  core:
-    external: true
 
 volumes:
   database-data:
