@@ -223,7 +223,7 @@ services:
   # Backrest backup solution
   backrest:
     image: garethgeorge/backrest:latest
-    container_name: core-backrest
+    container_name: backrest
     restart: unless-stopped
     volumes:
       - ${HOST_APPDATA}/backrest/data:/data
