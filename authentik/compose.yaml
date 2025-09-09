@@ -1,43 +1,6 @@
 name: authentik
 
 services:
-  # PostgreSQL database service
-  database:
-    image: postgres:16-alpine
-    container_name: authentik-database
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-authentik}
-      POSTGRES_USER: ${POSTGRES_USER:-authentik}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?database password required}
-    networks:
-      - backend
-    volumes:
-      - ${HOST_APPDATA}/authentik/database:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 5s
-
-  # Redis cache service
-  cache:
-    image: redis:alpine
-    container_name: authentik-cache
-    command: --save 60 1 --loglevel warning
-    restart: unless-stopped
-    networks:
-      - backend
-    volumes:
-      - cache-data:/data
-    healthcheck:
-      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-
   # Authentik web server
   server:
     image: ghcr.io/goauthentik/server:2025.8.1
@@ -52,8 +15,8 @@ services:
         condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_REDIS__HOST=authentik-cache
-      - AUTHENTIK_POSTGRESQL__HOST=authentik-database
+      - AUTHENTIK_REDIS__HOST=core-redis
+      - AUTHENTIK_POSTGRESQL__HOST=core-postgres
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
@@ -94,8 +57,8 @@ services:
         condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_REDIS__HOST=cache
-      - AUTHENTIK_POSTGRESQL__HOST=database
+      - AUTHENTIK_REDIS__HOST=core-redis
+      - AUTHENTIK_POSTGRESQL__HOST=core-postgres
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
