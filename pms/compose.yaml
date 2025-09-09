@@ -208,6 +208,9 @@ services:
       - VERSION=docker
     ports:
       - 32400:32400
+    networks:
+      - default
+      - core
     volumes:
       - ${HOST_APPDATA}/plex:/config
       - ${HOST_MEDIA}:/data/media
@@ -252,3 +255,5 @@ services:
 networks:
   default:
     name: pms
+  core:
+    external: true
