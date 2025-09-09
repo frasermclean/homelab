@@ -1,0 +1,115 @@
+name: authentik
+
+services:
+  # PostgreSQL database service
+  database:
+    image: postgres:16-alpine
+    container_name: authentik-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-authentik}
+      POSTGRES_USER: ${POSTGRES_USER:-authentik}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?:database password required}
+    volumes:
+      - ${HOST_APPDATA}/authentik/database:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+
+  # Redis cache service
+  cache:
+    image: redis:alpine
+    container_name: authentik-cache
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    volumes:
+      - cache-data:/data
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+
+  # Authentik web server
+  server:
+    image: ghcr.io/goauthentik/server:2025.8.1
+    container_name: authentik-server
+    restart: unless-stopped
+    command: server
+    user: ${PUID}:${PGID}
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    environment:
+      - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
+      - AUTHENTIK_CACHE__HOST=cache
+      - AUTHENTIK_POSTGRESQL__HOST=database
+      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
+      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
+      - AUTHENTIK_ERROR_REPORTING__ENABLED=true
+    volumes:
+      - ${HOST_APPDATA}/authentik/media:/media
+      - ${HOST_APPDATA}/authentik/templates:/templates
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.authentik-server.rule=Host(`auth.${DOMAIN}`)
+      - traefik.http.routers.authentik-server.tls.certresolver=cloudflare
+      - traefik.http.services.authentik-server.loadbalancer.server.port=9000
+      - homepage.group=Core
+      - homepage.name=Authentik
+      - homepage.description=Identity Provider / SSO
+      - homepage.icon=authentik
+      - homepage.href=https://auth.${DOMAIN}
+      - homepage.widget.type=authentik
+      - homepage.widget.version=2
+      - homepage.widget.url=http://authentik-server:9000
+      - homepage.widget.key=${API_TOKEN}
+
+  # Authentik worker service
+  worker:
+    image: ghcr.io/goauthentik/server:2025.8.1
+    container_name: authentik-worker
+    restart: unless-stopped
+    command: worker
+    user: ${PUID}:${PGID}
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    environment:
+      - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
+      - AUTHENTIK_CACHE__HOST=cache
+      - AUTHENTIK_POSTGRESQL__HOST=database
+      - AUTHENTIK_POSTGRESQL__USER=authentik
+      - AUTHENTIK_POSTGRESQL__NAME=authentik
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
+      - AUTHENTIK_EMAIL__HOST=smtp.fastmail.com
+      - AUTHENTIK_EMAIL__PORT=465
+      - AUTHENTIK_EMAIL__USERNAME=${EMAIL_USERNAME}
+      - AUTHENTIK_EMAIL__PASSWORD=${EMAIL_PASSWORD}
+      - AUTHENTIK_EMAIL__USE_SSL=true
+      - AUTHENTIK_EMAIL__TIMEOUT=10
+      - AUTHENTIK_EMAIL__FROM=${EMAIL_FROM}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOST_APPDATA}/authentik/media:/media
+      - ${HOST_APPDATA}/authentik/certs:/certs
+      - ${HOST_APPDATA}/authentik/templates:/templates
+
+networks:
+  default:
+    name: authentik
+    driver: bridge
+
+volumes:
+  cache-data:
+    name: authentik-cache-data
+    driver: local
