@@ -22,6 +22,7 @@ services:
       - traefik.http.routers.homepage.tls.certresolver=cloudflare
       - traefik.http.routers.homepage.middlewares=authentik@file
       - traefik.http.services.homepage.loadbalancer.server.port=3000
+      - traefik.docker.network=frontend
 
   # AdGuard Home for DNS filtering
   adguardhome:
@@ -41,6 +42,7 @@ services:
       - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
       - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
       - traefik.http.services.adguardhome.loadbalancer.server.port=80
+      - traefik.docker.network=frontend
       - homepage.group=Core
       - homepage.name=AdGuard Home
       - homepage.description=Ad Blocking and DNS filtering
@@ -75,6 +77,7 @@ services:
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls.certresolver=cloudflare
       - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,authentik@file
+      - traefik.docker.network=frontend
       - homepage.group=Core
       - homepage.description=Reverse proxy
       - homepage.name=Traefik
@@ -138,6 +141,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
       - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
+      - traefik.docker.network=frontend
 
   # Backrest backup solution
   backrest:
@@ -163,6 +167,7 @@ services:
       - traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN}`)
       - traefik.http.routers.backrest.tls.certresolver=cloudflare
       - traefik.http.services.backrest.loadbalancer.server.port=9898
+      - traefik.docker.network=frontend
 
 networks:
   backend:
