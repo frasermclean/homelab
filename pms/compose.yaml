@@ -13,6 +13,8 @@ services:
       - TORRENTING_PORT=54321
     ports:
       - 54321:54321
+    networks:
+      - frontend
     volumes:
       - ${HOST_APPDATA}/qbittorrent:/config
       - ${HOST_DOWNLOADS}:/data/downloads
@@ -40,6 +42,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - frontend
     volumes:
       - ${HOST_APPDATA}/sabnzbd:/config
       - ${HOST_DOWNLOADS}:/data/downloads
@@ -66,6 +70,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - frontend
+      - backend
     volumes:
       - ${HOST_APPDATA}/sonarr:/config
       - ${HOST_DOWNLOADS}:/data/downloads
@@ -78,6 +85,7 @@ services:
       - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
       - traefik.http.routers.sonarr.tls.certresolver=cloudflare
       - traefik.http.services.sonarr.loadbalancer.server.port=8989
+      - traefik.docker.network=frontend
       - homepage.group=Media
       - homepage.name=Sonarr
       - homepage.description=TV series manager
@@ -100,6 +108,9 @@ services:
       - ${HOST_APPDATA}/radarr:/config
       - ${HOST_DOWNLOADS}:/data/downloads
       - ${HOST_MEDIA}/movies:/data/media/movies
+    networks:
+      - frontend
+      - backend
     depends_on:
       - qbittorrent
       - sabnzbd
@@ -107,6 +118,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
       - traefik.http.routers.radarr.tls.certresolver=cloudflare
+      - traefik.docker.network=frontend
       - homepage.group=Media
       - homepage.name=Radarr
       - homepage.description=Movie manager
@@ -125,6 +137,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - frontend
+      - backend
     volumes:
       - ${HOST_APPDATA}/lidarr:/config
       - ${HOST_DOWNLOADS}:/data/downloads
@@ -136,6 +151,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
       - traefik.http.routers.lidarr.tls.certresolver=cloudflare
+      - traefik.docker.network=frontend
       - homepage.group=Media
       - homepage.name=Lidarr
       - homepage.description=Music manager
@@ -154,6 +170,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - frontend
+      - backend
     volumes:
       - ${HOST_APPDATA}/prowlarr:/config
     depends_on:
@@ -163,6 +182,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)
       - traefik.http.routers.prowlarr.tls.certresolver=cloudflare
+      - traefik.docker.network=frontend
       - homepage.group=Downloaders
       - homepage.name=Prowlarr
       - homepage.description=Indexer manager
@@ -181,6 +201,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - frontend
     volumes:
       - ${HOST_APPDATA}/overseerr:/config
     labels:
@@ -206,6 +228,8 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - VERSION=docker
+    networks:
+      - frontend
     ports:
       - 32400:32400
     volumes:
@@ -234,6 +258,8 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - frontend
     volumes:
       - ${HOST_APPDATA}/tautulli:/config
     labels:
@@ -250,5 +276,7 @@ services:
       - homepage.widget.key=${TAUTULLI_API_KEY}
 
 networks:
-  default:
-    name: pms
+  backend:
+    external: true
+  frontend:
+    external: true
