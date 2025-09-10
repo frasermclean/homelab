@@ -57,6 +57,15 @@ services:
       - traefik.http.routers.komodo.tls.certresolver=cloudflare
       - traefik.http.services.komodo.loadbalancer.server.port=9120
       - traefik.docker.network=frontend
+      - homepage.group=Core
+      - homepage.name=Komodo
+      - homepage.description=Docker management platform
+      - homepage.icon=komodo
+      - homepage.href=https://komodo.${DOMAIN}
+      - homepage.widget.type=komodo
+      - homepage.widget.url=http://komodo-core:9120
+      - homepage.widget.key=${KOMODO_API_KEY}
+      - homepage.widget.secret=${KOMODO_API_SECRET}
 
   # Periphery service
   periphery:
