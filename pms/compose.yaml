@@ -236,11 +236,6 @@ services:
       - ${HOST_APPDATA}/plex:/config
       - ${HOST_MEDIA}:/data/media
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.plex.rule=Host(`plex.${DOMAIN}`)
-      - traefik.http.routers.plex.tls.certresolver=cloudflare
-      - traefik.http.services.plex.loadbalancer.servers[0].url=http://192.168.1.2:32400
-      - traefik.docker.network=frontend
       - homepage.group=Media
       - homepage.name=Plex
       - homepage.description=Media server
