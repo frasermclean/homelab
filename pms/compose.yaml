@@ -231,10 +231,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
       - VERSION=docker
-    networks:
-      - frontend
-    ports:
-      - 32400:32400
+    network_mode: host
     volumes:
       - ${HOST_APPDATA}/plex:/config
       - ${HOST_MEDIA}:/data/media
@@ -250,7 +247,7 @@ services:
       - homepage.icon=plex
       - homepage.href=https://plex.${DOMAIN}
       - homepage.widget.type=plex
-      - homepage.widget.url=http://plex:32400
+      - homepage.widget.url=http://192.168.1.2:32400
       - homepage.widget.key=${PLEX_SERVER_TOKEN}
 
   # Tautulli media server monitoring
