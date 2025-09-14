@@ -1,0 +1,18 @@
+[[deployment]]
+name = "speedtest-tracker"
+
+[deployment.config]
+server = "Roach"
+image.type = "Image"
+image.params.image = "lscr.io/linuxserver/speedtest-tracker:latest"
+poll_for_updates = true
+network = "frontend"
+restart = "unless-stopped"
+volumes = """
+/share/AppData/speedtest-tracker = /config
+"""
+environment = """
+PUID = [[SERVICE_UID]]
+PGID = [[SERVICE_GID]]
+APP_KEY = base64:xZwdrmz5GQMxnIMfrIc/KGGec5GSA8BDjA9EgdTAseg=
+"""
