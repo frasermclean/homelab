@@ -14,5 +14,5 @@ volumes = """
 environment = """
 PUID = [[SERVICE_UID]]
 PGID = [[SERVICE_GID]]
-APP_KEY = base64:xZwdrmz5GQMxnIMfrIc/KGGec5GSA8BDjA9EgdTAseg=
+APP_KEY = [[STT_APP_KEY]]
 """
