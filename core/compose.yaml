@@ -186,6 +186,46 @@ services:
       - traefik.http.services.backrest.loadbalancer.server.port=9898
       - traefik.docker.network=frontend
 
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest-tracker
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+      - frontend
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - APP_KEY=${STT_APP_KEY}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=speedtest_tracker
+      - DB_USERNAME=speedtest_tracker
+      - DB_PASSWORD=${STT_DB_PASSWORD}
+    volumes:
+      - ${HOST_APPDATA}/speedtest-tracker:/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.speedtest-tracker.rule=Host(`speedtest.${DOMAIN}`)
+      - traefik.http.routers.speedtest-tracker.tls.certresolver=cloudflare
+      - traefik.http.routers.speedtest-tracker.middlewares=authentik@file
+      - traefik.http.services.speedtest-tracker.loadbalancer.server.port=8080
+      - traefik.docker.network=frontend
+      - homepage.group=Core
+      - homepage.name=Speedtest Tracker
+      - homepage.description=Internet speed logging and monitoring
+      - homepage.icon=speedtest
+      - homepage.href=https://speedtest.${DOMAIN}
+      - homepage.widget.type=speedtest
+      - homepage.widget.url=http://speedtest-tracker
+      - homepage.widget.version=2
+      - homepage.widget.key=${STT_APP_KEY}
+      - homepage.widget.bitratePrecision=
+
 networks:
   backend:
     external: true
