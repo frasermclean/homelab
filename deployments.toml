@@ -15,4 +15,10 @@ environment = """
 PUID = [[SERVICE_UID]]
 PGID = [[SERVICE_GID]]
 APP_KEY = [[STT_APP_KEY]]
+DB_CONNECTION = pgsql
+DB_HOST = db
+DB_PORT = 5432
+DB_DATABASE = speedtest_tracker
+DB_USERNAME = speedtest_tracker
+DB_PASSWORD = [[STT_DB_PASSWORD]]
 """
