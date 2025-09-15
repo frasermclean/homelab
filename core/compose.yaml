@@ -206,6 +206,9 @@ services:
       - DB_DATABASE=speedtest_tracker
       - DB_USERNAME=speedtest_tracker
       - DB_PASSWORD=${STT_DB_PASSWORD}
+      - DISPLAY_TIMEZONE=${TZ}
+      - SPEEDTEST_SCHEDULE=0 5 * * *
+      - SPEEDTEST_SERVERS=5935
     volumes:
       - ${HOST_APPDATA}/speedtest-tracker:/config
     labels:
