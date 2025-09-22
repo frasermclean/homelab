@@ -201,7 +201,7 @@ services:
       - PGID=${PGID}
       - APP_KEY=${STT_APP_KEY}
       - DB_CONNECTION=pgsql
-      - DB_HOST=postgres
+      - DB_HOST=${STT_DB_HOST}
       - DB_PORT=5432
       - DB_DATABASE=speedtest_tracker
       - DB_USERNAME=speedtest_tracker
