@@ -11,7 +11,7 @@ services:
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
       - AUTHENTIK_REDIS__HOST=core-redis
-      - AUTHENTIK_POSTGRESQL__HOST=core-postgres
+      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST}
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
@@ -48,7 +48,7 @@ services:
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
       - AUTHENTIK_REDIS__HOST=core-redis
-      - AUTHENTIK_POSTGRESQL__HOST=core-postgres
+      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST}
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
