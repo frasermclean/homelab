@@ -24,7 +24,7 @@ services:
 
 volumes:
   prometheus-data:
-    driver: local
+    name: prometheus-data
 
 networks:
   default:
