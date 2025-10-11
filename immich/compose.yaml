@@ -50,7 +50,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.immich.rule=Host(`immich.${DOMAIN}`)
       - traefik.http.routers.immich.tls.certresolver=cloudflare
-      - traefik.docker.network=frontend
+      - traefik.docker.network=shared
       - homepage.group=Media
       - homepage.name=Immich
       - homepage.description=Photo and video library
