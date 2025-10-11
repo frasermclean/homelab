@@ -120,23 +120,6 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
-  # Redis cache service
-  redis:
-    image: redis:alpine
-    container_name: core-redis
-    command: --save 60 1 --loglevel warning
-    restart: unless-stopped
-    networks:
-      - shared
-    volumes:
-      - redis-data:/data
-    healthcheck:
-      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-
   # pgAdmin web interface for Postgres
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -233,9 +216,3 @@ networks:
     external: true
   frontend:
     external: true
-
-volumes:
-  portainer-data:
-    driver: local
-  redis-data:
-    driver: local

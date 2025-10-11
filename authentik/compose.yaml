@@ -1,6 +1,21 @@
 name: authentik
 
 services:
+  # Redis cache service
+  cache:
+    image: redis:alpine
+    container_name: authentik-cache
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    volumes:
+      - cache-data:/data
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+
   # Authentik web server
   server:
     image: ghcr.io/goauthentik/server:2025.8.4
@@ -8,9 +23,12 @@ services:
     restart: unless-stopped
     command: server
     user: ${PUID}:${PGID}
+    depends_on:
+      cache:
+        condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_REDIS__HOST=core-redis
+      - AUTHENTIK_REDIS__HOST=cache
       - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST}
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
@@ -47,7 +65,7 @@ services:
     user: ${PUID}:${PGID}
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_REDIS__HOST=core-redis
+      - AUTHENTIK_REDIS__HOST=cache
       - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST}
       - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
