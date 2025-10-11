@@ -14,7 +14,7 @@ services:
       - default
       - shared
     volumes:
-      - ${HOST_APPDATA}/postgres:/var/lib/postgresql/data
+      - database-data:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD-SHELL
@@ -119,7 +119,7 @@ networks:
     external: true
 
 volumes:
-  postgres-data:
+  database-data:
     name: authentik-postgres-data
     driver: local
   cache-data:
