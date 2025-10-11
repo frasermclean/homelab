@@ -89,13 +89,13 @@ services:
   # Docker socket proxy
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest
-    container_name: core-socket-proxy
+    container_name: socket-proxy
     restart: unless-stopped
     environment:
       - CONTAINERS=1
       - EVENTS=1
     networks:
-      - backend
+      - shared
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     read_only: true
