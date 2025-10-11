@@ -15,12 +15,13 @@ services:
       - prometheus-data:/prometheus
     networks:
       - default
-      - backend
+      - shared
     labels:
       - traefik.enable=true
       - traefik.http.routers.prometheus.rule=Host(`prometheus.${DOMAIN}`)
       - traefik.http.routers.prometheus.tls.certresolver=cloudflare
       - traefik.http.services.prometheus.loadbalancer.server.port=9090
+      - traefik.docker.network=shared
 
   # Node exporter for Prometheus
   node-exporter:
@@ -43,12 +44,13 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - default
-      - backend
+      - shared
     labels:
       - traefik.enable=true
       - traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN}`)
       - traefik.http.routers.grafana.tls.certresolver=cloudflare
       - traefik.http.services.grafana.loadbalancer.server.port=3000
+      - traefik.docker.network=shared
 
 volumes:
   prometheus-data:
@@ -60,5 +62,5 @@ networks:
   default:
     name: monitoring
     driver: bridge
-  backend:
+  shared:
     external: true
