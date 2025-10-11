@@ -120,7 +120,7 @@ networks:
 
 volumes:
   database-data:
-    name: authentik-postgres-data
+    name: authentik-database-data
     driver: local
   cache-data:
     name: authentik-cache-data
