@@ -7,7 +7,8 @@ services:
     container_name: homepage
     restart: unless-stopped
     networks:
-      - backend
+      - default
+      - shared
       - frontend
     volumes:
       - ${HOST_APPDATA}/homepage/config:/app/config
@@ -22,7 +23,7 @@ services:
       - traefik.http.routers.homepage.tls.certresolver=cloudflare
       - traefik.http.routers.homepage.middlewares=authentik@file
       - traefik.http.services.homepage.loadbalancer.server.port=3000
-      - traefik.docker.network=frontend
+      - traefik.docker.network=core
 
   # AdGuard Home for DNS filtering
   adguardhome:
@@ -32,8 +33,6 @@ services:
     ports:
       - 53:53/tcp
       - 53:53/udp
-    networks:
-      - frontend
     volumes:
       - ${HOST_APPDATA}/adguardhome/conf:/opt/adguardhome/conf
       - ${HOST_APPDATA}/adguardhome/work:/opt/adguardhome/work
@@ -42,7 +41,6 @@ services:
       - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
       - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
       - traefik.http.services.adguardhome.loadbalancer.server.port=80
-      - traefik.docker.network=frontend
       - homepage.group=Core
       - homepage.name=AdGuard Home
       - homepage.description=Ad Blocking and DNS filtering
@@ -62,6 +60,8 @@ services:
       - TZ=${TZ}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     networks:
+      - default
+      - shared
       - backend
       - frontend
     ports:
@@ -77,7 +77,7 @@ services:
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls.certresolver=cloudflare
       - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,authentik@file
-      - traefik.docker.network=frontend
+      - traefik.docker.network=core
       - homepage.group=Core
       - homepage.description=Reverse proxy
       - homepage.name=Traefik
@@ -149,6 +149,8 @@ services:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     networks:
+      - default
+      - shared
       - frontend
       - backend
     volumes:
@@ -158,15 +160,13 @@ services:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
       - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
-      - traefik.docker.network=frontend
+      - traefik.docker.network=core
 
   # Backrest backup solution
   backrest:
     image: garethgeorge/backrest:latest
     container_name: backrest
     restart: unless-stopped
-    networks:
-      - frontend
     volumes:
       - ${HOST_APPDATA}/backrest/data:/data
       - ${HOST_APPDATA}/backrest/config:/config
@@ -184,7 +184,6 @@ services:
       - traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN}`)
       - traefik.http.routers.backrest.tls.certresolver=cloudflare
       - traefik.http.services.backrest.loadbalancer.server.port=9898
-      - traefik.docker.network=frontend
 
   speedtest-tracker:
     image: lscr.io/linuxserver/speedtest-tracker:latest
@@ -193,9 +192,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - backend
-      - frontend
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -216,7 +212,6 @@ services:
       - traefik.http.routers.speedtest-tracker.rule=Host(`speedtest.${DOMAIN}`)
       - traefik.http.routers.speedtest-tracker.tls.certresolver=cloudflare
       - traefik.http.services.speedtest-tracker.loadbalancer.server.port=80
-      - traefik.docker.network=frontend
       - homepage.group=Core
       - homepage.name=Speedtest Tracker
       - homepage.description=Internet speed logging and monitoring
@@ -229,6 +224,11 @@ services:
       - homepage.widget.bitratePrecision=2
 
 networks:
+  default:
+    name: core
+    driver: bridge
+  shared:
+    external: true
   backend:
     external: true
   frontend:
