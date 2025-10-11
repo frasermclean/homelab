@@ -111,7 +111,6 @@ services:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     networks:
-      - default
       - shared
     volumes:
       - ${HOST_APPDATA}/pgadmin/config/config_local.py:/pgadmin4/config_local.py:ro
@@ -120,7 +119,6 @@ services:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
       - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
-      - traefik.docker.network=shared
 
   # Backrest backup solution
   backrest:
