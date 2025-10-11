@@ -17,8 +17,8 @@ services:
       - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
       - AUTHENTIK_ERROR_REPORTING__ENABLED=true
     networks:
-      - backend
-      - frontend
+      - default
+      - shared
     volumes:
       - ${HOST_APPDATA}/authentik/media:/media
       - ${HOST_APPDATA}/authentik/templates:/templates
@@ -27,7 +27,7 @@ services:
       - traefik.http.routers.authentik-server.rule=Host(`auth.${DOMAIN}`)
       - traefik.http.routers.authentik-server.tls.certresolver=cloudflare
       - traefik.http.services.authentik-server.loadbalancer.server.port=9000
-      - traefik.docker.network=frontend
+      - traefik.docker.network=shared
       - homepage.group=Core
       - homepage.name=Authentik
       - homepage.description=Identity Provider / SSO
@@ -60,7 +60,8 @@ services:
       - AUTHENTIK_EMAIL__TIMEOUT=10
       - AUTHENTIK_EMAIL__FROM=${EMAIL_FROM}
     networks:
-      - backend
+      - default
+      - shared
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOST_APPDATA}/authentik/media:/media
@@ -68,9 +69,10 @@ services:
       - ${HOST_APPDATA}/authentik/templates:/templates
 
 networks:
-  backend:
-    external: true
-  frontend:
+  default:
+    name: authentik
+    driver: bridge
+  shared:
     external: true
 
 volumes:
