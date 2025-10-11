@@ -1,6 +1,29 @@
 name: authentik
 
 services:
+  # PostgreSQL database service
+  database:
+    image: postgres:16-alpine
+    container_name: authentik-database
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-authentik}
+      POSTGRES_USER: ${DATABASE_USER:-authentik}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?database password required}
+    networks:
+      - default
+      - shared
+    volumes:
+      - ${HOST_APPDATA}/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+
   # Redis cache service
   cache:
     image: redis:alpine
@@ -24,6 +47,8 @@ services:
     command: server
     user: ${PUID}:${PGID}
     depends_on:
+      database:
+        condition: service_healthy
       cache:
         condition: service_healthy
     environment:
@@ -94,6 +119,9 @@ networks:
     external: true
 
 volumes:
+  postgres-data:
+    name: authentik-postgres-data
+    driver: local
   cache-data:
     name: authentik-cache-data
     driver: local
