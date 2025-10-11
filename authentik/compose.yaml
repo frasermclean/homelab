@@ -54,10 +54,10 @@ services:
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
       - AUTHENTIK_REDIS__HOST=cache
-      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST}
-      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
-      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
-      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
+      - AUTHENTIK_POSTGRESQL__HOST=database
+      - AUTHENTIK_POSTGRESQL__NAME=${DATABASE_NAME:-authentik}
+      - AUTHENTIK_POSTGRESQL__USER=${DATABASE_USER:-authentik}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${DATABASE_PASSWORD:?database password required}
       - AUTHENTIK_ERROR_REPORTING__ENABLED=true
     networks:
       - default
@@ -91,10 +91,10 @@ services:
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
       - AUTHENTIK_REDIS__HOST=cache
-      - AUTHENTIK_POSTGRESQL__HOST=${POSTGRES_HOST}
-      - AUTHENTIK_POSTGRESQL__NAME=${POSTGRES_DB:-authentik}
-      - AUTHENTIK_POSTGRESQL__USER=${POSTGRES_USER:-authentik}
-      - AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRES_PASSWORD:?database password required}
+      - AUTHENTIK_POSTGRESQL__HOST=database
+      - AUTHENTIK_POSTGRESQL__NAME=${DATABASE_NAME:-authentik}
+      - AUTHENTIK_POSTGRESQL__USER=${DATABASE_USER:-authentik}
+      - AUTHENTIK_POSTGRESQL__PASSWORD=${DATABASE_PASSWORD:?database password required}
       - AUTHENTIK_EMAIL__HOST=smtp.fastmail.com
       - AUTHENTIK_EMAIL__PORT=465
       - AUTHENTIK_EMAIL__USERNAME=${EMAIL_USERNAME}
@@ -102,9 +102,6 @@ services:
       - AUTHENTIK_EMAIL__USE_SSL=true
       - AUTHENTIK_EMAIL__TIMEOUT=10
       - AUTHENTIK_EMAIL__FROM=${EMAIL_FROM}
-    networks:
-      - default
-      - shared
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${HOST_APPDATA}/authentik/media:/media
