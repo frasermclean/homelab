@@ -42,7 +42,7 @@ services:
       - server-data:/data
     networks:
       - default
-      - shared
+      - core
     depends_on:
       - database
       - cache
@@ -50,7 +50,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.immich.rule=Host(`immich.${DOMAIN}`)
       - traefik.http.routers.immich.tls.certresolver=cloudflare
-      - traefik.docker.network=shared
+      - traefik.docker.network=core
       - homepage.group=Media
       - homepage.name=Immich
       - homepage.description=Photo and video library
@@ -73,7 +73,7 @@ networks:
   default:
     name: immich
     driver: bridge
-  shared:
+  core:
     external: true
 
 volumes:
