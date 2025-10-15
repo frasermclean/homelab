@@ -71,6 +71,6 @@ homepage.href = https://speedtest.[[DOMAIN]]
 homepage.widget.type = speedtest
 homepage.widget.url = http://speedtest-tracker
 homepage.widget.version = 2
-homepage.widget.key = [[STT_API_KEY]]
+homepage.widget.key = [[STT_API_TOKEN]]
 homepage.widget.bitratePrecision = 2
 """
