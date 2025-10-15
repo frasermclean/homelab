@@ -60,7 +60,7 @@ volumes = """
 """
 labels = """
 traefik.enable = true
-traefik.http.routers.speedtest-tracker.rule = 'Host(`speedtest.${DOMAIN}`)'
+traefik.http.routers.speedtest-tracker.rule = 'Host(`speedtest.[[DOMAIN]]`)'
 traefik.http.routers.speedtest-tracker.tls.certresolver = cloudflare
 traefik.http.services.speedtest-tracker.loadbalancer.server.port = 80
 homepage.group = Core
