@@ -6,10 +6,6 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
-    networks:
-      - default
-      - shared
-      - frontend
     volumes:
       - ${HOST_APPDATA}/homepage/config:/app/config
       - ${HOST_APPDATA}/homepage/images:/app/public/images
@@ -23,7 +19,6 @@ services:
       - traefik.http.routers.homepage.tls.certresolver=cloudflare
       - traefik.http.routers.homepage.middlewares=authentik@file
       - traefik.http.services.homepage.loadbalancer.server.port=3000
-      - traefik.docker.network=core
 
   # AdGuard Home for DNS filtering
   adguardhome:
@@ -59,11 +54,6 @@ services:
     environment:
       - TZ=${TZ}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
-    networks:
-      - default
-      - shared
-      - backend
-      - frontend
     ports:
       - 7000:7000 # Dashboard
       - 80:80 # HTTP
@@ -77,7 +67,6 @@ services:
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls.certresolver=cloudflare
       - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,authentik@file
-      - traefik.docker.network=core
       - homepage.group=Core
       - homepage.description=Reverse proxy
       - homepage.name=Traefik
@@ -94,8 +83,6 @@ services:
     environment:
       - CONTAINERS=1
       - EVENTS=1
-    networks:
-      - shared
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     read_only: true
@@ -110,8 +97,6 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    networks:
-      - shared
     volumes:
       - ${HOST_APPDATA}/pgadmin/config/config_local.py:/pgadmin4/config_local.py:ro
       - ${HOST_APPDATA}/pgadmin/data:/var/lib/pgadmin
@@ -182,9 +167,3 @@ networks:
   default:
     name: core
     driver: bridge
-  shared:
-    external: true
-  backend:
-    external: true
-  frontend:
-    external: true
