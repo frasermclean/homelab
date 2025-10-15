@@ -10,8 +10,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
-    networks:
-      - backend
     volumes:
       - mongo-data:/data/db
       - mongo-config:/data/configdb
@@ -44,9 +42,6 @@ services:
       - KOMODO_OIDC_PROVIDER=https://auth.${DOMAIN}/application/o/komodo/
       - KOMODO_OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
       - KOMODO_OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
-    networks:
-      - backend
-      - frontend
     volumes:
       - ${HOST_APPDATA}/komodo/backups:/backups # Store dated backups of the database - https://komo.do/docs/setup/backup
       - ${HOST_APPDATA}/komodo/syncs:/syncs # Store sync files on server
@@ -56,7 +51,6 @@ services:
       - traefik.http.routers.komodo.rule=Host(`komodo.${DOMAIN}`)
       - traefik.http.routers.komodo.tls.certresolver=cloudflare
       - traefik.http.services.komodo.loadbalancer.server.port=9120
-      - traefik.docker.network=frontend
       - homepage.group=Core
       - homepage.name=Komodo
       - homepage.description=Docker management platform
@@ -80,8 +74,6 @@ services:
       - PERIPHERY_INCLUDE_DISK_MOUNTS=/etc/hostname
       - PERIPHERY_LOGGING_PRETTY=false
       - PERIPHERY_PRETTY_STARTUP_CONFIG=false
-    networks:
-      - backend
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Mount external docker socket
       - /proc:/proc # Allow Periphery to see processes outside of container
@@ -96,7 +88,6 @@ volumes:
     name: komodo-mongo-config
 
 networks:
-  backend:
-    external: true
-  frontend:
+  default:
+    name: core
     external: true
