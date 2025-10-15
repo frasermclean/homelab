@@ -8,6 +8,7 @@ deploy = true
 server = "Roach"
 image.type = "Image"
 image.params.image = "ghcr.io/gethomepage/homepage:latest"
+restart = "unless-stopped"
 network = "core"
 environment = """
 HOMEPAGE_ALLOWED_HOSTS=[[DOMAIN]]
@@ -20,7 +21,7 @@ volumes = """
 """
 labels = """
 traefik.enable = true
-traefik.http.routers.homepage.rule = Host(`[[DOMAIN]]`)
+traefik.http.routers.homepage.rule = 'Host(`[[DOMAIN]]`)'
 traefik.http.routers.homepage.tls.certresolver = cloudflare
 traefik.http.routers.homepage.middlewares = authentik@file
 traefik.http.services.homepage.loadbalancer.server.port = 3000
