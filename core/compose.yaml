@@ -109,41 +109,6 @@ services:
       - traefik.http.routers.backrest.tls.certresolver=cloudflare
       - traefik.http.services.backrest.loadbalancer.server.port=9898
 
-  speedtest-tracker:
-    image: lscr.io/linuxserver/speedtest-tracker:latest
-    container_name: speedtest-tracker
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - APP_KEY=${STT_APP_KEY}
-      - DB_CONNECTION=pgsql
-      - DB_HOST=${STT_DB_HOST}
-      - DB_PORT=5432
-      - DB_DATABASE=speedtest_tracker
-      - DB_USERNAME=speedtest_tracker
-      - DB_PASSWORD=${STT_DB_PASSWORD}
-      - DISPLAY_TIMEZONE=${TZ}
-      - SPEEDTEST_SCHEDULE=0 5 * * *
-      - SPEEDTEST_SERVERS=5935
-    volumes:
-      - ${HOST_APPDATA}/speedtest-tracker:/config
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.speedtest-tracker.rule=Host(`speedtest.${DOMAIN}`)
-      - traefik.http.routers.speedtest-tracker.tls.certresolver=cloudflare
-      - traefik.http.services.speedtest-tracker.loadbalancer.server.port=80
-      - homepage.group=Core
-      - homepage.name=Speedtest Tracker
-      - homepage.description=Internet speed logging and monitoring
-      - homepage.icon=speedtest-tracker
-      - homepage.href=https://speedtest.${DOMAIN}
-      - homepage.widget.type=speedtest
-      - homepage.widget.url=http://speedtest-tracker
-      - homepage.widget.version=2
-      - homepage.widget.key=${STT_API_KEY}
-      - homepage.widget.bitratePrecision=2
-
 networks:
   default:
     name: core

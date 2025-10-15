@@ -1,3 +1,5 @@
+## Homepage deployment
+
 [[deployment]]
 name = "homepage"
 description = "Application dashboard"
@@ -27,6 +29,8 @@ traefik.http.routers.homepage.middlewares = authentik@file
 traefik.http.services.homepage.loadbalancer.server.port = 3000
 """
 
+## Speedtest Tracker deployment
+
 [[deployment]]
 name = "speedtest-tracker"
 
@@ -35,11 +39,8 @@ server = "Roach"
 image.type = "Image"
 image.params.image = "lscr.io/linuxserver/speedtest-tracker:latest"
 poll_for_updates = true
-network = "frontend"
+network = "core"
 restart = "unless-stopped"
-volumes = """
-/share/AppData/speedtest-tracker = /config
-"""
 environment = """
 PUID = [[SERVICE_UID]]
 PGID = [[SERVICE_GID]]
@@ -50,4 +51,26 @@ DB_PORT = 5432
 DB_DATABASE = speedtest_tracker
 DB_USERNAME = speedtest_tracker
 DB_PASSWORD = [[STT_DB_PASSWORD]]
+DISPLAY_TIMEZONE = [[SYSTEM_TZ]]
+SPEEDTEST_SCHEDULE = "0 5 * * *"
+SPEEDTEST_SERVERS = "5935"
+"""
+volumes = """
+[[HOST_APPDATA]]/speedtest-tracker = /config
+"""
+labels = """
+traefik.enable = true
+traefik.http.routers.speedtest-tracker.rule = 'Host(`speedtest.${DOMAIN}`)'
+traefik.http.routers.speedtest-tracker.tls.certresolver = cloudflare
+traefik.http.services.speedtest-tracker.loadbalancer.server.port = 80
+homepage.group = Core
+homepage.name = Speedtest Tracker
+homepage.description = Internet speed logging and monitoring
+homepage.icon = speedtest-tracker
+homepage.href = https://speedtest.[[DOMAIN]]
+homepage.widget.type = speedtest
+homepage.widget.url = http://speedtest-tracker
+homepage.widget.version = 2
+homepage.widget.key = [[STT_API_KEY]]
+homepage.widget.bitratePrecision = 2
 """
