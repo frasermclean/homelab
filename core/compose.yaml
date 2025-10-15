@@ -1,25 +1,6 @@
 name: core
 
 services:
-  # Homepage personal dashboards
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    restart: unless-stopped
-    volumes:
-      - ${HOST_APPDATA}/homepage/config:/app/config
-      - ${HOST_APPDATA}/homepage/images:/app/public/images
-    environment:
-      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
-      - PUID=${PUID}
-      - PGID=${PGID}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.homepage.tls.certresolver=cloudflare
-      - traefik.http.routers.homepage.middlewares=authentik@file
-      - traefik.http.services.homepage.loadbalancer.server.port=3000
-
   # AdGuard Home for DNS filtering
   adguardhome:
     image: adguard/adguardhome

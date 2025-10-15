@@ -1,4 +1,32 @@
 [[deployment]]
+name = "homepage"
+description = "Application dashboard"
+tags = ["core"]
+deploy = true
+
+[deployment.config]
+server = "Roach"
+image.type = "Image"
+image.params.image = "ghcr.io/gethomepage/homepage:latest"
+network = "core"
+environment = """
+HOMEPAGE_ALLOWED_HOSTS=[[DOMAIN]]
+PUID=[[SERVICE_UID]]
+PGID=[[SERVICE_GID]]
+"""
+volumes = """
+[[HOST_APPDATA]]/homepage/config = /app/config
+[[HOST_APPDATA]]/homepage/images = /app/public/images
+"""
+labels = """
+traefik.enable = true
+traefik.http.routers.homepage.rule = Host(`[[DOMAIN]]`)
+traefik.http.routers.homepage.tls.certresolver = cloudflare
+traefik.http.routers.homepage.middlewares = authentik@file
+traefik.http.services.homepage.loadbalancer.server.port = 3000
+"""
+
+[[deployment]]
 name = "speedtest-tracker"
 
 [deployment.config]
