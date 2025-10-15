@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?database password required}
     networks:
       - default
-      - shared
+      - core
     volumes:
       - database-data:/var/lib/postgresql/data
     healthcheck:
@@ -61,7 +61,7 @@ services:
       - AUTHENTIK_ERROR_REPORTING__ENABLED=true
     networks:
       - default
-      - shared
+      - core
     volumes:
       - ${HOST_APPDATA}/authentik/media:/media
       - ${HOST_APPDATA}/authentik/templates:/templates
@@ -70,7 +70,7 @@ services:
       - traefik.http.routers.authentik-server.rule=Host(`auth.${DOMAIN}`)
       - traefik.http.routers.authentik-server.tls.certresolver=cloudflare
       - traefik.http.services.authentik-server.loadbalancer.server.port=9000
-      - traefik.docker.network=shared
+      - traefik.docker.network=core
       - homepage.group=Core
       - homepage.name=Authentik
       - homepage.description=Identity Provider / SSO
@@ -117,7 +117,7 @@ networks:
   default:
     name: authentik
     driver: bridge
-  shared:
+  core:
     external: true
 
 volumes:
