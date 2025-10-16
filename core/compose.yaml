@@ -99,6 +99,9 @@ services:
       NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
       NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
       NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_AUTH_USERS: 'deus:$$2a$$12$$cyw1TQmFU6NH77VUYfvJ8OI.a6H/LUIsqNv4K3.AeGKBoHUVcSUTS:admin' # Must escape '$' as '$$'
+      NTFY_ENABLE_LOGIN: true
     user: ${PUID}:${PGID}
     volumes:
       - ${HOST_APPDATA}/ntfy:/var/lib/ntfy
