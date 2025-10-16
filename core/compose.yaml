@@ -86,6 +86,37 @@ services:
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
       - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
 
+  # Ntfy notification service
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    command: ['serve']
+    environment:
+      TZ: ${TZ}
+      NTFY_BASE_URL: http://ntfy.${DOMAIN}
+      NTFY_BEHIND_PROXY: true
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_ATTACHMENT_CACHE_DIR: /var/lib/ntfy/attachments
+    user: ${PUID}:${PGID}
+    volumes:
+      - ${HOST_APPDATA}/ntfy:/var/lib/ntfy
+    labels:
+      traefik.enable: true
+      traefik.http.routers.ntfy.rule: Host(`ntfy.${DOMAIN}`)
+      traefik.http.routers.ntfy.tls.certresolver: cloudflare
+      traefik.http.services.ntfy.loadbalancer.server.port: 80
+    healthcheck: # optional: remember to adapt the host:port to your environment
+      test:
+        - 'CMD-SHELL'
+        - "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    init: true # needed, if healthcheck is used. Prevents zombie processes
+
   # Backrest backup solution
   backrest:
     image: garethgeorge/backrest:latest
