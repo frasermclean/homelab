@@ -86,6 +86,26 @@ services:
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
       - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
 
+  # Apprise API
+  apprise:
+    image: caronc/apprise:latest
+    container_name: apprise
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - APPRISE_STATEFUL_MODE=simple
+      - APPRISE_WORKER_COUNT=1
+    volumes:
+      - ${HOST_APPDATA}/apprise/config:/config
+      - ${HOST_APPDATA}/apprise/plugin:/plugin
+      - ${HOST_APPDATA}/apprise/attach:/attach
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.apprise.rule=Host(`apprise.${DOMAIN}`)
+      - traefik.http.routers.apprise.tls.certresolver=cloudflare
+      - traefik.http.services.apprise.loadbalancer.server.port=8000
+
   # Ntfy notification service
   ntfy:
     image: binwiederhier/ntfy:latest
