@@ -29,11 +29,15 @@ services:
     container_name: node-exporter
     restart: unless-stopped
     pid: host
-    command:
-      - '--path.rootfs=/host'
     network_mode: host
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     volumes:
-      - '/:/host:ro,rslave'
+      - '/proc:/host/proc:ro'
+      - '/sys:/host/sys:ro'
+      - '/:/rootfs:ro'
 
   # Grafana dashboard and visualization tool
   grafana:
