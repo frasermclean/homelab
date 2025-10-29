@@ -113,10 +113,19 @@ services:
     restart: unless-stopped
     command: ['serve']
     environment:
-      TZ: ${TZ}
+      - TZ=${TZ}
+      - NTFY_BASE_URL=https://ntfy.${DOMAIN}
+      - NTFY_BEHIND_PROXY=true
+      - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
+      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
+      - NTFY_ATTACHMENT_CACHE_DIR=/var/lib/ntfy/attachments
+      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
+      - NTFY_AUTH_USERS=${NTFY_AUTH_USERS}
+      - NTFY_AUTH_ACCESS=service:*:rw
+      - NTFY_ENABLE_LOGIN=true
+      - NTFY_REQUIRE_LOGIN=true # all actions via the web app require a login
     user: ${PUID}:${PGID}
     volumes:
-      - ${HOST_APPDATA}/ntfy/server.yml:/etc/ntfy/server.yml:ro
       - ${HOST_APPDATA}/ntfy:/var/lib/ntfy
     labels:
       traefik.enable: true
