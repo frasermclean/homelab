@@ -24,24 +24,9 @@ services:
       retries: 5
       timeout: 5s
 
-  # Redis cache service
-  cache:
-    image: redis:alpine
-    container_name: authentik-cache
-    command: --save 60 1 --loglevel warning
-    restart: unless-stopped
-    volumes:
-      - cache-data:/data
-    healthcheck:
-      test: ['CMD-SHELL', 'redis-cli ping | grep PONG']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-
   # Authentik web server
   server:
-    image: ghcr.io/goauthentik/server:2025.8.4
+    image: ghcr.io/goauthentik/server:2025.10.0
     container_name: authentik-server
     restart: unless-stopped
     command: server
@@ -49,11 +34,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      cache:
-        condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_REDIS__HOST=cache
       - AUTHENTIK_POSTGRESQL__HOST=database
       - AUTHENTIK_POSTGRESQL__NAME=${DATABASE_NAME:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${DATABASE_USER:-authentik}
@@ -83,7 +65,7 @@ services:
 
   # Authentik worker service
   worker:
-    image: ghcr.io/goauthentik/server:2025.8.4
+    image: ghcr.io/goauthentik/server:2025.10.0
     container_name: authentik-worker
     restart: unless-stopped
     command: worker
@@ -91,11 +73,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      cache:
-        condition: service_healthy
     environment:
       - AUTHENTIK_SECRET_KEY=${SECRET_KEY:?secret key required}
-      - AUTHENTIK_REDIS__HOST=cache
       - AUTHENTIK_POSTGRESQL__HOST=database
       - AUTHENTIK_POSTGRESQL__NAME=${DATABASE_NAME:-authentik}
       - AUTHENTIK_POSTGRESQL__USER=${DATABASE_USER:-authentik}
@@ -123,7 +102,4 @@ networks:
 volumes:
   database-data:
     name: authentik-database-data
-    driver: local
-  cache-data:
-    name: authentik-cache-data
     driver: local
