@@ -1,32 +1,6 @@
 name: core
 
 services:
-  # AdGuard Home for DNS filtering
-  adguardhome:
-    image: adguard/adguardhome
-    container_name: adguardhome
-    restart: unless-stopped
-    ports:
-      - 53:53/tcp
-      - 53:53/udp
-    volumes:
-      - ${HOST_APPDATA}/adguardhome/conf:/opt/adguardhome/conf
-      - ${HOST_APPDATA}/adguardhome/work:/opt/adguardhome/work
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.adguardhome.rule=Host(`adguard.${DOMAIN}`)
-      - traefik.http.routers.adguardhome.tls.certresolver=cloudflare
-      - traefik.http.services.adguardhome.loadbalancer.server.port=80
-      - homepage.group=Core
-      - homepage.name=AdGuard Home
-      - homepage.description=Ad Blocking and DNS filtering
-      - homepage.icon=adguard-home
-      - homepage.href=https://adguard.${DOMAIN}
-      - homepage.widget.type=adguard
-      - homepage.widget.url=http://adguardhome
-      - homepage.widget.username=${ADGUARDHOME_USERNAME}
-      - homepage.widget.password=${ADGUARDHOME_PASSWORD}
-
   # Traefik reverse proxy
   traefik:
     image: traefik:v3.6
@@ -55,6 +29,26 @@ services:
       - homepage.href=https://traefik.${DOMAIN}
       - homepage.widget.type=traefik
       - homepage.widget.url=http://traefik:7000
+
+  # Technitium DNS server
+  dns-server:
+    image: technitium/dns-server:latest
+    container_name: dns-server
+    restart: unless-stopped
+    ports:
+      - 53:53/udp
+      - 53:53/tcp
+    environment:
+      - DNS_SERVER_DOMAIN=${DOMAIN}
+    volumes:
+      - ${HOST_APPDATA}/dns-server:/etc/dns
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dns-server.rule=Host(`dns.${DOMAIN}`)
+      - traefik.http.routers.dns-server.tls.certresolver=cloudflare
+      - traefik.http.services.dns-server.loadbalancer.server.port=5380
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65535 # to allow high port range for DNS queries
 
   # Docker socket proxy
   socket-proxy:
