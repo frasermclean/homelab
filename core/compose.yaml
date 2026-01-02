@@ -142,29 +142,6 @@ services:
       start_period: 40s
     init: true # needed, if healthcheck is used. Prevents zombie processes
 
-  # Backrest backup solution
-  backrest:
-    image: garethgeorge/backrest:latest
-    container_name: backrest
-    restart: unless-stopped
-    volumes:
-      - ${HOST_APPDATA}/backrest/data:/data
-      - ${HOST_APPDATA}/backrest/config:/config
-      - ${HOST_APPDATA}/backrest/cache:/cache
-      - ${HOST_APPDATA}/backrest/tmp:/tmp
-      - ${HOST_APPDATA}:/share/AppData # Mount local paths to backup
-    environment:
-      - BACKREST_DATA=/data
-      - BACKREST_CONFIG=/config/config.json
-      - XDG_CACHE_HOME=/cache
-      - TMPDIR=/tmp
-      - TZ=${TZ}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.backrest.rule=Host(`backrest.${DOMAIN}`)
-      - traefik.http.routers.backrest.tls.certresolver=cloudflare
-      - traefik.http.services.backrest.loadbalancer.server.port=9898
-
 networks:
   default:
     name: core
