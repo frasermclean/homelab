@@ -36,8 +36,9 @@ services:
     container_name: dns-server
     restart: unless-stopped
     ports:
-      - 53:53/udp
-      - 53:53/tcp
+      - 53:53/udp # DNS over UDP
+      - 53:53/tcp # DNS over TCP
+      - 53443:53443 # Technitium DNS web interface (secure)
     environment:
       - DNS_SERVER_DOMAIN=${DOMAIN}
     volumes:
@@ -47,6 +48,15 @@ services:
       - traefik.http.routers.dns-server.rule=Host(`dns.${DOMAIN}`)
       - traefik.http.routers.dns-server.tls.certresolver=cloudflare
       - traefik.http.services.dns-server.loadbalancer.server.port=5380
+      - homepage.group=Core
+      - homepage.name=Technitium DNS
+      - homepage.description=DNS Cluster Management
+      - homepage.icon=technitium
+      - homepage.href=https://dns.${DOMAIN}
+      - homepage.widget.type=technitium
+      - homepage.widget.url=http://dns-server:5380
+      - homepage.widget.key=${TECHNITIUM_DNS_TOKEN}
+      - homepage.widget.range=LastDay
     sysctls:
       - net.ipv4.ip_local_port_range=1024 65535 # to allow high port range for DNS queries
 
