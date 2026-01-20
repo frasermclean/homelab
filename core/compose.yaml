@@ -87,7 +87,7 @@ services:
       - APP_URL=https://id.${DOMAIN}
       - TRUST_PROXY=true
       - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
-      - DB_CONNECTION_STRING=postgresql://pocketid:${POCKETID_DB_PASSWORD}@core-postgres/pocketid
+      - DB_CONNECTION_STRING=postgres://pocketid:${POCKETID_DB_PASSWORD}@core-postgres/pocketid
     volumes:
       - ${HOST_APPDATA}/pocket-id:/app/data
     labels:
