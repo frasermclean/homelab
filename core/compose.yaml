@@ -20,7 +20,7 @@ services:
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls.certresolver=cloudflare
-      - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,authentik@file
+      - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,tinyauth
       - homepage.group=Core
       - homepage.description=Reverse proxy
       - homepage.name=Traefik
@@ -28,6 +28,7 @@ services:
       - homepage.href=https://traefik.${DOMAIN}
       - homepage.widget.type=traefik
       - homepage.widget.url=http://traefik:7000
+      - tinyauth.apps.traefik.oauth.groups=administrators
 
   # Technitium DNS server
   dns-server:
