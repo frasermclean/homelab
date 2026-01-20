@@ -19,7 +19,6 @@ services:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.tls.certresolver=cloudflare
       - traefik.http.routers.traefik.middlewares=local-ip-whitelist@file,tinyauth
       - homepage.group=Core
       - homepage.description=Reverse proxy
@@ -46,7 +45,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.dns-server.rule=Host(`dns.${DOMAIN}`)
-      - traefik.http.routers.dns-server.tls.certresolver=cloudflare
       - traefik.http.services.dns-server.loadbalancer.server.port=5380
       - homepage.group=Core
       - homepage.name=Technitium DNS
@@ -94,7 +92,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)
-      - traefik.http.routers.pocket-id.tls.certresolver=cloudflare
       - traefik.http.services.pocket-id.loadbalancer.server.port=1411
     healthcheck:
       test: ['CMD', '/app/pocket-id', 'healthcheck']
@@ -127,9 +124,9 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
-      - traefik.http.routers.tinyauth.tls.certresolver=cloudflare
       - traefik.http.services.tinyauth.loadbalancer.server.port=3000
       - traefik.http.middlewares.tinyauth.forwardauth.address=http://tinyauth:3000/api/auth/traefik
+      - traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders=authorization
 
   # Homepage personal dashboards
   homepage:
@@ -146,7 +143,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.homepage.tls.certresolver=cloudflare
       - traefik.http.routers.homepage.middlewares=tinyauth
       - traefik.http.services.homepage.loadbalancer.server.port=3000
       - tinyauth.apps.homepage.config.domain=${DOMAIN}
@@ -180,7 +176,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
-      - traefik.http.routers.pgadmin.tls.certresolver=cloudflare
 
   # Apprise API
   apprise:
@@ -199,7 +194,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.apprise.rule=Host(`apprise.${DOMAIN}`)
-      - traefik.http.routers.apprise.tls.certresolver=cloudflare
       - traefik.http.services.apprise.loadbalancer.server.port=8000
 
   # Ntfy notification service
@@ -226,7 +220,6 @@ services:
     labels:
       traefik.enable: true
       traefik.http.routers.ntfy.rule: Host(`ntfy.${DOMAIN}`)
-      traefik.http.routers.ntfy.tls.certresolver: cloudflare
       traefik.http.services.ntfy.loadbalancer.server.port: 80
     healthcheck: # optional: remember to adapt the host:port to your environment
       test:
