@@ -103,6 +103,21 @@ services:
       retries: 2
       start_period: 10s
 
+  # TinyAuth
+  tinyauth:
+    image: ghcr.io/steveiliop56/tinyauth:v4
+    container_name: tinyauth
+    restart: unless-stopped
+    environment:
+      - APP_URL=https://tinyauth.${DOMAIN}
+      - USERS=${TINYAUTH_USERS} # https://tinyauth.app/docs/getting-started#user-creation
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
+      - traefik.http.routers.tinyauth.tls.certresolver=cloudflare
+      - traefik.http.services.tinyauth.loadbalancer.server.port=3000
+      - traefik.http.middlewares.tinyauth.forwardauth.address=http://tinyauth:3000/api/auth/traefik
+
   # Docker socket proxy
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest
