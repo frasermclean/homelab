@@ -117,6 +117,25 @@ services:
       - traefik.http.services.tinyauth.loadbalancer.server.port=3000
       - traefik.http.middlewares.tinyauth.forwardauth.address=http://tinyauth:3000/api/auth/traefik
 
+  # Homepage personal dashboards
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    volumes:
+      - ${HOST_APPDATA}/homepage/config:/app/config
+      - ${HOST_APPDATA}/homepage/images:/app/public/images
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.homepage.tls.certresolver=cloudflare
+      - traefik.http.routers.homepage.middlewares=tinyauth
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+
   # Docker socket proxy
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest
