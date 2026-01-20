@@ -68,6 +68,8 @@ services:
     environment:
       - APP_URL=https://id.${DOMAIN}
       - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
+      - PUID=${PUID}
+      - PGID=${PGID}
     volumes:
       - ${HOST_APPDATA}/pocket-id:/app/data
     labels:
