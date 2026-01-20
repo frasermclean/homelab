@@ -10,7 +10,6 @@ services:
       - TZ=${TZ}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     ports:
-      - 7000:7000 # Dashboard
       - 80:80 # HTTP
       - 443:443 # HTTPS
     volumes:
