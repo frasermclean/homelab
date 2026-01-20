@@ -49,7 +49,6 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.immich.rule=Host(`immich.${DOMAIN}`)
-      - traefik.http.routers.immich.tls.certresolver=cloudflare
       - traefik.docker.network=core
       - homepage.group=Media
       - homepage.name=Immich
