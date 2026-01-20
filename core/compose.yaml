@@ -60,6 +60,28 @@ services:
     sysctls:
       - net.ipv4.ip_local_port_range=1024 65535 # to allow high port range for DNS queries
 
+  # Pocket ID
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v2
+    container_name: pocket-id
+    restart: unless-stopped
+    environment:
+      - APP_URL=https://id.${DOMAIN}
+      - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
+    volumes:
+      - ${HOST_APPDATA}/pocket-id:/app/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)
+      - traefik.http.routers.pocket-id.tls.certresolver=cloudflare
+      - traefik.http.services.pocket-id.loadbalancer.server.port=1411
+    healthcheck:
+      test: ['CMD', '/app/pocket-id', 'healthcheck']
+      interval: 1m30s
+      timeout: 5s
+      retries: 2
+      start_period: 10s
+
   # Docker socket proxy
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest
