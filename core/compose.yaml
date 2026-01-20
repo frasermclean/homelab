@@ -102,7 +102,7 @@ services:
       retries: 2
       start_period: 10s
 
-  # TinyAuth
+  # Tinyauth
   tinyauth:
     image: ghcr.io/steveiliop56/tinyauth:v4
     container_name: tinyauth
@@ -110,6 +110,16 @@ services:
     environment:
       - APP_URL=https://tinyauth.${DOMAIN}
       - USERS=${TINYAUTH_USERS} # https://tinyauth.app/docs/getting-started#user-creation
+      - PROVIDERS_POCKETID_CLIENT_ID=${TINYAUTH_POCKETID_CLIENT_ID}
+      - PROVIDERS_POCKETID_CLIENT_SECRET=${TINYAUTH_POCKETID_CLIENT_SECRET}
+      - PROVIDERS_POCKETID_AUTH_URL=https://id.${DOMAIN}/authorize
+      - PROVIDERS_POCKETID_TOKEN_URL=https://id.${DOMAIN}/api/oidc/token
+      - PROVIDERS_POCKETID_USER_INFO_URL=https://id.${DOMAIN}/api/oidc/userinfo
+      - PROVIDERS_POCKETID_REDIRECT_URL=https://tinyauth.${DOMAIN}/api/oauth/callback/pocketid
+      - PROVIDERS_POCKETID_SCOPES=openid email profile groups
+      - PROVIDERS_POCKETID_NAME=Pocket ID
+      - OAUTH_AUTO_REDIRECT=pocketid
+      - OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
     labels:
       - traefik.enable=true
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
