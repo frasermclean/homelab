@@ -120,6 +120,7 @@ services:
       - PROVIDERS_POCKETID_NAME=Pocket ID
       - OAUTH_AUTO_REDIRECT=pocketid
       - OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
+      - DOCKER_HOST=tcp://socket-proxy:2375
     volumes:
       - tinyauth-data:/data
     labels:
