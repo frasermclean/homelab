@@ -120,6 +120,8 @@ services:
       - PROVIDERS_POCKETID_NAME=Pocket ID
       - OAUTH_AUTO_REDIRECT=pocketid
       - OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
+    volumes:
+      - tinyauth-data:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
@@ -231,6 +233,10 @@ services:
       retries: 3
       start_period: 40s
     init: true # needed, if healthcheck is used. Prevents zombie processes
+
+volumes:
+  tinyauth-data:
+    name: tinyauth-data
 
 networks:
   default:
