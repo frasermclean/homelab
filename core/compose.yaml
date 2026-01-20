@@ -82,10 +82,12 @@ services:
     container_name: pocket-id
     restart: unless-stopped
     environment:
-      - APP_URL=https://id.${DOMAIN}
-      - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
       - PUID=${PUID}
       - PGID=${PGID}
+      - APP_URL=https://id.${DOMAIN}
+      - TRUST_PROXY=true
+      - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
+      - DB_CONNECTION_STRING=postgresql://pocketid:${POCKETID_DB_PASSWORD}@core-postgres/pocketid
     volumes:
       - ${HOST_APPDATA}/pocket-id:/app/data
     labels:
