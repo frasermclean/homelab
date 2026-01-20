@@ -52,7 +52,6 @@ services:
       - komodo.skip=1 # Prevent Komodo from stopping with StopAllContainers
       - traefik.enable=true
       - traefik.http.routers.komodo.rule=Host(`komodo.${DOMAIN}`)
-      - traefik.http.routers.komodo.tls.certresolver=cloudflare
       - traefik.http.services.komodo.loadbalancer.server.port=9120
       - traefik.docker.network=core
       - homepage.group=Core
