@@ -162,6 +162,15 @@ services:
     tmpfs:
       - /run
 
+  # Cloudflare Tunnel
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARED_TUNNEL_TOKEN}
+
   # pgAdmin web interface for Postgres
   pgadmin:
     image: dpage/pgadmin4:latest
