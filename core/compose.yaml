@@ -15,6 +15,9 @@ services:
     volumes:
       - ${HOST_APPDATA}/traefik:/etc/traefik
       - /var/log/traefik:/var/log/traefik
+    networks:
+      default:
+        ipv4_address: 172.20.0.2
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
@@ -258,3 +261,7 @@ networks:
   default:
     name: core
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
