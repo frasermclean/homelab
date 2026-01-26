@@ -15,7 +15,7 @@ services:
       - 54321:54321
     volumes:
       - ${HOST_APPDATA}/qbittorrent:/config
-      - ${HOST_DOWNLOADS}:/data/downloads
+      - ${HOST_DATA}:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN}`)
@@ -41,7 +41,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${HOST_APPDATA}/sabnzbd:/config
-      - ${HOST_DOWNLOADS}:/data/downloads
+      - ${HOST_DATA}:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`)
@@ -66,8 +66,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${HOST_APPDATA}/sonarr:/config
-      - ${HOST_DOWNLOADS}:/data/downloads
-      - ${HOST_MEDIA}/tv:/data/media/tv
+      - ${HOST_DATA}:/data
     depends_on:
       - qbittorrent
       - sabnzbd
@@ -95,8 +94,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${HOST_APPDATA}/radarr:/config
-      - ${HOST_DOWNLOADS}:/data/downloads
-      - ${HOST_MEDIA}/movies:/data/media/movies
+      - ${HOST_DATA}:/data
     depends_on:
       - qbittorrent
       - sabnzbd
@@ -123,8 +121,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${HOST_APPDATA}/lidarr:/config
-      - ${HOST_DOWNLOADS}:/data/downloads
-      - ${HOST_MEDIA}/music:/data/media/music
+      - ${HOST_DATA}:/data
     depends_on:
       - qbittorrent
       - sabnzbd
@@ -202,7 +199,7 @@ services:
     network_mode: host
     volumes:
       - ${HOST_APPDATA}/plex:/config
-      - ${HOST_MEDIA}:/data/media
+      - ${HOST_DATA}:/data
     labels:
       - homepage.group=Media
       - homepage.name=Plex
