@@ -102,26 +102,6 @@ services:
       - traefik.http.middlewares.tinyauth.forwardauth.address=http://tinyauth:3000/api/auth/traefik
       - traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders=authorization
 
-  # Homepage personal dashboards
-  homepage:
-    image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
-    restart: unless-stopped
-    volumes:
-      - ${HOST_APPDATA}/homepage/config:/app/config
-      - ${HOST_APPDATA}/homepage/images:/app/public/images
-    environment:
-      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
-      - PUID=${PUID}
-      - PGID=${PGID}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.homepage.middlewares=tinyauth
-      - traefik.http.services.homepage.loadbalancer.server.port=3000
-      - tinyauth.apps.homepage.config.domain=${DOMAIN}
-      - tinyauth.apps.homepage.oauth.groups=administrators
-
   # Docker socket proxy
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest
