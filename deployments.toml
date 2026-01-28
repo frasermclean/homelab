@@ -24,9 +24,10 @@ volumes = """
 labels = """
 traefik.enable = true
 traefik.http.routers.homepage.rule = 'Host(`[[DOMAIN]]`)'
-traefik.http.routers.homepage.tls.certresolver = cloudflare
-traefik.http.routers.homepage.middlewares = authentik@file
+traefik.http.routers.homepage.middlewares = tinyauth@docker
 traefik.http.services.homepage.loadbalancer.server.port = 3000
+tinyauth.apps.homepage.config.domain=[[DOMAIN]]
+tinyauth.apps.homepage.oauth.groups=administrators
 """
 
 ## Speedtest Tracker deployment
