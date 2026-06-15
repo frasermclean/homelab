@@ -13,6 +13,9 @@ services:
       - TORRENTING_PORT=54321
     ports:
       - 54321:54321
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/qbittorrent:/config
       - ${HOST_MEDIA}:/media
@@ -39,6 +42,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/sabnzbd:/config
       - ${HOST_MEDIA}:/media
@@ -80,6 +86,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/sonarr:/config
       - ${HOST_MEDIA}:/media
@@ -109,6 +118,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/radarr:/config
       - ${HOST_MEDIA}:/media
@@ -137,6 +149,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/lidarr:/config
       - ${HOST_MEDIA}:/media
@@ -165,6 +180,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/prowlarr:/config
     depends_on:
@@ -192,6 +210,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/overseerr:/config
     labels:
@@ -239,6 +260,9 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    networks:
+      - default
+      - proxy
     volumes:
       - ${HOST_APPDATA}/tautulli:/config
     labels:
