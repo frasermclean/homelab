@@ -235,5 +235,7 @@ services:
 
 networks:
   default:
-    name: core
+    name: pms
+  proxy:
+    name: proxy
     external: true
