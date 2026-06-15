@@ -61,22 +61,6 @@ services:
       - homepage.widget.url=http://sabnzbd:8080
       - homepage.widget.key=${SABNZBD_API_KEY}
 
-  # PostgreSQL database service
-  postgres:
-    image: postgres:17
-    container_name: pms-database
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - ${HOST_APPDATA}/postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 5s
-
   # Sonarr TV show manager
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -95,7 +79,6 @@ services:
     depends_on:
       - qbittorrent
       - sabnzbd
-      - postgres
     labels:
       - traefik.enable=true
       - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
@@ -127,7 +110,6 @@ services:
     depends_on:
       - qbittorrent
       - sabnzbd
-      - postgres
     labels:
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
@@ -158,7 +140,6 @@ services:
     depends_on:
       - qbittorrent
       - sabnzbd
-      - postgres
     labels:
       - traefik.enable=true
       - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
@@ -188,7 +169,6 @@ services:
     depends_on:
       - qbittorrent
       - sabnzbd
-      - postgres
     labels:
       - traefik.enable=true
       - traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)
