@@ -42,14 +42,13 @@ services:
       - server-data:/data
     networks:
       - default
-      - core
+      - proxy
     depends_on:
       - database
       - cache
     labels:
       - traefik.enable=true
       - traefik.http.routers.immich.rule=Host(`immich.${DOMAIN}`)
-      - traefik.docker.network=core
       - homepage.group=Media
       - homepage.name=Immich
       - homepage.description=Photo and video library
@@ -72,7 +71,7 @@ networks:
   default:
     name: immich
     driver: bridge
-  core:
+  proxy:
     external: true
 
 volumes:
