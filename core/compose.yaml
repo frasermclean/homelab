@@ -94,7 +94,7 @@ services:
       - OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
       - DOCKER_HOST=tcp://socket-proxy:2375
     volumes:
-      - tinyauth-data:/data
+      - ${HOST_APPDATA}/tinyauth:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
@@ -206,10 +206,6 @@ services:
       retries: 3
       start_period: 40s
     init: true # needed, if healthcheck is used. Prevents zombie processes
-
-volumes:
-  tinyauth-data:
-    name: tinyauth-data
 
 networks:
   default:
