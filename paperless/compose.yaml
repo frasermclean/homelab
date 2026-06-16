@@ -46,6 +46,9 @@ services:
       PAPERLESS_DBPASS: ${DB_PASSWORD}
       PAPERLESS_URL: https://paperless.${DOMAIN}
       PAPERLESS_SECRET_KEY: ${SECRET_KEY}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.paperless.rule=Host(`paperless.${DOMAIN}`)
 
 volumes:
   broker-data:
