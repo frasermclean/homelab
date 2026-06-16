@@ -42,7 +42,7 @@ services:
       - server-data:/data
     networks:
       - default
-      - proxy
+      - core
     depends_on:
       - database
       - cache
@@ -71,7 +71,7 @@ networks:
   default:
     name: immich
     driver: bridge
-  proxy:
+  core:
     external: true
 
 volumes:
