@@ -1,0 +1,50 @@
+name: paperless
+
+services:
+  # Redis broker
+  broker:
+    image: redis:8
+    container_name: paperless-broker
+    restart: unless-stopped
+    volumes:
+      - broker-data:/data
+
+  # Database
+  database:
+    image: postgres:18
+    container_name: paperless-database
+    restart: unless-stopped
+    volumes:
+      - database-data:/var/lib/postgresql
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+  # Webserver
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - database
+      - broker
+    volumes:
+      - ${HOST_APPDATA}/paperless/data:/usr/src/paperless/data
+      - ${HOST_APPDATA}/paperless/media:/usr/src/paperless/media
+      - ${HOST_APPDATA}/paperless/export:/usr/src/paperless/export
+      - ${HOST_APPDATA}/paperless/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_TIME_ZONE: ${TZ}
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBHOST: paperless-database
+      PAPERLESS_DBPASS: ${DB_PASSWORD}
+
+volumes:
+  broker-data:
+    name: paperless-broker
+  database-data:
+    name: paperless-database
+
+networks:
+  default:
+    name: paperless
