@@ -33,11 +33,18 @@ services:
       - ${HOST_APPDATA}/paperless/media:/usr/src/paperless/media
       - ${HOST_APPDATA}/paperless/export:/usr/src/paperless/export
       - ${HOST_APPDATA}/paperless/consume:/usr/src/paperless/consume
+    networks:
+      - default
+      - core
     environment:
+      USERMAP_UID: ${PUID}
+      USERMAP_GID: ${PGID}
       PAPERLESS_TIME_ZONE: ${TZ}
       PAPERLESS_REDIS: redis://paperless-broker:6379
       PAPERLESS_DBHOST: paperless-database
       PAPERLESS_DBPASS: ${DB_PASSWORD}
+      PAPERLESS_URL: https://paperless.${DOMAIN}
+      PAPERLESS_SECRET_KEY: ${SECRET_KEY}
 
 volumes:
   broker-data:
@@ -48,3 +55,5 @@ volumes:
 networks:
   default:
     name: paperless
+  core:
+    external: true
