@@ -100,8 +100,9 @@ services:
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
       - traefik.http.services.tinyauth.loadbalancer.server.port=3000
       - traefik.http.middlewares.tinyauth.forwardauth.address=http://tinyauth:3000/api/auth/traefik
-      - traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders=authorization
+      - traefik.http.middlewares.tinyauth.forwardauth.authResponseHeaders=authorization,remote-user
       - traefik.http.middlewares.tinyauth.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.tinyauth.forwardauth.maxBodySize=1048576
       - traefik.http.middlewares.tinyauth.forwardauth.maxResponseBodySize=1048576
 
   # Docker socket proxy
