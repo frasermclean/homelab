@@ -21,9 +21,10 @@ services:
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-  # Webserver
-  webserver:
+  # Web server
+  server:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless-server
     restart: unless-stopped
     depends_on:
       - database
