@@ -3,7 +3,7 @@ name: core
 services:
   # Traefik reverse proxy
   traefik:
-    image: traefik:v3.6
+    image: traefik:v3.7
     container_name: traefik
     restart: unless-stopped
     environment:
@@ -17,7 +17,7 @@ services:
       - /var/log/traefik:/var/log/traefik
     networks:
       default:
-        ipv4_address: 172.20.0.2
+        ipv4_address: 172.20.0.200
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
