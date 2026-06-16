@@ -15,7 +15,7 @@ services:
       - 54321:54321
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/qbittorrent:/config
       - ${HOST_MEDIA}:/media
@@ -44,7 +44,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/sabnzbd:/config
       - ${HOST_MEDIA}:/media
@@ -72,7 +72,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/sonarr:/config
       - ${HOST_MEDIA}:/media
@@ -103,7 +103,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/radarr:/config
       - ${HOST_MEDIA}:/media
@@ -133,7 +133,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/lidarr:/config
       - ${HOST_MEDIA}:/media
@@ -163,7 +163,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/prowlarr:/config
     depends_on:
@@ -192,7 +192,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/overseerr:/config
     labels:
@@ -242,7 +242,7 @@ services:
       - TZ=${TZ}
     networks:
       - default
-      - proxy
+      - core
     volumes:
       - ${HOST_APPDATA}/tautulli:/config
     labels:
@@ -260,6 +260,6 @@ services:
 networks:
   default:
     name: pms
-  proxy:
-    name: proxy
+  core:
+    name: core
     external: true
