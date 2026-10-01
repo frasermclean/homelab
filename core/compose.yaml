@@ -65,19 +65,18 @@ services:
     container_name: tinyauth
     restart: unless-stopped
     environment:
-      - APP_URL=https://tinyauth.${DOMAIN}
-      - USERS=${TINYAUTH_USERS} # https://tinyauth.app/docs/getting-started#user-creation
-      - PROVIDERS_POCKETID_CLIENT_ID=${TINYAUTH_POCKETID_CLIENT_ID}
-      - PROVIDERS_POCKETID_CLIENT_SECRET=${TINYAUTH_POCKETID_CLIENT_SECRET}
-      - PROVIDERS_POCKETID_AUTH_URL=https://id.${DOMAIN}/authorize
-      - PROVIDERS_POCKETID_TOKEN_URL=https://id.${DOMAIN}/api/oidc/token
-      - PROVIDERS_POCKETID_USER_INFO_URL=https://id.${DOMAIN}/api/oidc/userinfo
-      - PROVIDERS_POCKETID_REDIRECT_URL=https://tinyauth.${DOMAIN}/api/oauth/callback/pocketid
-      - PROVIDERS_POCKETID_SCOPES=openid email profile groups
-      - PROVIDERS_POCKETID_NAME=Pocket ID
-      - OAUTH_AUTO_REDIRECT=pocketid
-      - OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
-      - DOCKER_HOST=tcp://socket-proxy:2375
+      - TINYAUTH_APPURL=https://tinyauth.${DOMAIN}
+      - TINYAUTH_AUTH_USERS=${TINYAUTH_USERS} # https://tinyauth.app/docs/getting-started#user-creation
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTID=${TINYAUTH_POCKETID_CLIENT_ID}
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_CLIENTSECRET=${TINYAUTH_POCKETID_CLIENT_SECRET}
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_AUTHURL=https://id.${DOMAIN}/authorize
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_TOKENURL=https://id.${DOMAIN}/api/oidc/token
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_USERINFOURL=https://id.${DOMAIN}/api/oidc/userinfo
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_REDIRECTURL=https://tinyauth.${DOMAIN}/api/oauth/callback/pocketid
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_SCOPES=openid email profile groups
+      - TINYAUTH_OAUTH_PROVIDERS_POCKETID_NAME=Pocket ID
+      - TINYAUTH_OAUTH_AUTOREDIRECT=pocketid
+      - TINYAUTH_OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
     networks:
       - core
     volumes:
