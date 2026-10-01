@@ -43,7 +43,6 @@ services:
       - APP_URL=https://id.${DOMAIN}
       - TRUST_PROXY=true
       - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
-      - DB_CONNECTION_STRING=postgres://pocketid:${POCKETID_DB_PASSWORD}@core-postgres/pocketid
       - MAXMIND_LICENSE_KEY=${POCKETID_MAXMIND_KEY}
     networks:
       - core
