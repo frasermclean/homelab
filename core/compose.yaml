@@ -13,11 +13,11 @@ services:
       - 80:80 # HTTP
       - 443:443 # HTTPS
     volumes:
-      - ${HOST_APPDATA}/traefik:/etc/traefik
-      - /var/log/traefik:/var/log/traefik
+      - ./traefik/config:/etc/traefik
+      - ./traefik/logs:/var/log/traefik
     networks:
-      default:
-        ipv4_address: 172.20.0.200
+      core:
+        ipv4_address: 172.18.0.200
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
@@ -32,22 +32,6 @@ services:
       - homepage.widget.url=http://traefik:7000
       - tinyauth.apps.traefik.oauth.groups=administrators
 
-  # PostgreSQL database service
-  postgres:
-    image: postgres:17
-    container_name: core-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - ${HOST_APPDATA}/postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 5s
-
   # Pocket ID
   pocket-id:
     image: ghcr.io/pocket-id/pocket-id:v2
@@ -61,8 +45,10 @@ services:
       - ENCRYPTION_KEY=${POCKETID_ENCRYPTION_KEY}
       - DB_CONNECTION_STRING=postgres://pocketid:${POCKETID_DB_PASSWORD}@core-postgres/pocketid
       - MAXMIND_LICENSE_KEY=${POCKETID_MAXMIND_KEY}
+    networks:
+      - core
     volumes:
-      - ${HOST_APPDATA}/pocket-id:/app/data
+      - ./pocket-id/data:/app/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)
@@ -93,8 +79,10 @@ services:
       - OAUTH_AUTO_REDIRECT=pocketid
       - OAUTH_WHITELIST=${TINYAUTH_OAUTH_WHITELIST} # comma-separated list of allowed email addresses
       - DOCKER_HOST=tcp://socket-proxy:2375
+    networks:
+      - core
     volumes:
-      - ${HOST_APPDATA}/tinyauth:/data
+      - ./tinyauth/data:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
@@ -105,113 +93,6 @@ services:
       - traefik.http.middlewares.tinyauth.forwardauth.maxBodySize=1048576
       - traefik.http.middlewares.tinyauth.forwardauth.maxResponseBodySize=1048576
 
-  # Docker socket proxy
-  socket-proxy:
-    image: lscr.io/linuxserver/socket-proxy:latest
-    container_name: socket-proxy
-    restart: unless-stopped
-    environment:
-      - CONTAINERS=1
-      - EVENTS=1
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    read_only: true
-    tmpfs:
-      - /run
-
-  # Cloudflare Tunnel
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    restart: unless-stopped
-    command: tunnel --no-autoupdate run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
-    labels:
-      - homepage.group=Core
-      - homepage.name=Cloudflare Tunnel
-      - homepage.description=Remote access tunnel
-      - homepage.icon=cloudflare
-      - homepage.href=https://one.dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}/networks/connectors
-      - homepage.widget.type=cloudflared
-      - homepage.widget.accountid=${CLOUDFLARE_ACCOUNT_ID}
-      - homepage.widget.tunnelid=${CLOUDFLARE_TUNNEL_ID}
-      - homepage.widget.key=${CLOUDFLARE_API_KEY}
-
-  # pgAdmin web interface for Postgres
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin
-    restart: unless-stopped
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-    volumes:
-      - ${HOST_APPDATA}/pgadmin/config/config_local.py:/pgadmin4/config_local.py:ro
-      - ${HOST_APPDATA}/pgadmin/data:/var/lib/pgadmin
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.pgadmin.rule=Host(`pgadmin.${DOMAIN}`)
-
-  # Apprise API
-  apprise:
-    image: caronc/apprise:latest
-    container_name: apprise
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - APPRISE_STATEFUL_MODE=simple
-      - APPRISE_WORKER_COUNT=1
-    volumes:
-      - ${HOST_APPDATA}/apprise/config:/config
-      - ${HOST_APPDATA}/apprise/plugin:/plugin
-      - ${HOST_APPDATA}/apprise/attach:/attach
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.apprise.rule=Host(`apprise.${DOMAIN}`)
-      - traefik.http.services.apprise.loadbalancer.server.port=8000
-
-  # Ntfy notification service
-  ntfy:
-    image: binwiederhier/ntfy:latest
-    container_name: ntfy
-    restart: unless-stopped
-    command: ['serve']
-    environment:
-      - TZ=${TZ}
-      - NTFY_BASE_URL=https://ntfy.${DOMAIN}
-      - NTFY_BEHIND_PROXY=true
-      - NTFY_CACHE_FILE=/var/lib/ntfy/cache.db
-      - NTFY_AUTH_FILE=/var/lib/ntfy/auth.db
-      - NTFY_ATTACHMENT_CACHE_DIR=/var/lib/ntfy/attachments
-      - NTFY_AUTH_DEFAULT_ACCESS=deny-all
-      - NTFY_AUTH_USERS=${NTFY_AUTH_USERS}
-      - NTFY_AUTH_ACCESS=service:*:rw
-      - NTFY_ENABLE_LOGIN=true
-      - NTFY_REQUIRE_LOGIN=true # all actions via the web app require a login
-    user: ${PUID}:${PGID}
-    volumes:
-      - ${HOST_APPDATA}/ntfy:/var/lib/ntfy
-    labels:
-      traefik.enable: true
-      traefik.http.routers.ntfy.rule: Host(`ntfy.${DOMAIN}`)
-      traefik.http.services.ntfy.loadbalancer.server.port: 80
-    healthcheck: # optional: remember to adapt the host:port to your environment
-      test:
-        - 'CMD-SHELL'
-        - "wget -q --tries=1 http://localhost:80/v1/health -O - | grep -Eo '\"healthy\"\\s*:\\s*true' || exit 1"
-      interval: 60s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    init: true # needed, if healthcheck is used. Prevents zombie processes
-
 networks:
-  default:
-    name: core
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-          gateway: 172.20.0.1
+  core:
+    external: true
