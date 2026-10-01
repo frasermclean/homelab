@@ -125,8 +125,8 @@ services:
       - ./homepage/images:/app/public/images
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
-      - PUID=${SERVICE_PUID}
-      - PGID=${SERVICE_PGID}
+      - PUID=${PUID}
+      - PGID=${PGID}
     labels:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
