@@ -48,7 +48,7 @@ services:
     networks:
       - core
     volumes:
-      - ./pocket-id/data:/app/data
+      - ./pocket-id:/app/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)
@@ -82,7 +82,7 @@ services:
     networks:
       - core
     volumes:
-      - ./tinyauth/data:/data
+      - ./tinyauth:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.tinyauth.rule=Host(`tinyauth.${DOMAIN}`)
