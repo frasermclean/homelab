@@ -32,6 +32,25 @@ services:
       - homepage.widget.url=http://traefik:7000
       - tinyauth.apps.traefik.oauth.groups=administrators
 
+  # Cloudflare Tunnel
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    labels:
+      - homepage.group=Core
+      - homepage.name=Cloudflare Tunnel
+      - homepage.description=Remote access tunnel
+      - homepage.icon=cloudflare
+      - homepage.href=https://one.dash.cloudflare.com/${CLOUDFLARE_ACCOUNT_ID}/networks/connectors
+      - homepage.widget.type=cloudflared
+      - homepage.widget.accountid=${CLOUDFLARE_ACCOUNT_ID}
+      - homepage.widget.tunnelid=${CLOUDFLARE_TUNNEL_ID}
+      - homepage.widget.key=${CLOUDFLARE_API_KEY}
+
   # Pocket ID
   pocket-id:
     image: ghcr.io/pocket-id/pocket-id:v2
