@@ -92,6 +92,28 @@ services:
       - traefik.http.middlewares.tinyauth.forwardauth.maxBodySize=1048576
       - traefik.http.middlewares.tinyauth.forwardauth.maxResponseBodySize=1048576
 
+  # Homepage personal dashboards
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    networks:
+      - core
+    volumes:
+      - ./homepage/config:/app/config
+      - ./homepage/images:/app/public/images
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
+      - PUID=${SERVICE_PUID}
+      - PGID=${SERVICE_PGID}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.homepage.middlewares=tinyauth
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+      - tinyauth.apps.homepage.config.domain=${DOMAIN}
+      - tinyauth.apps.homepage.oauth.groups=administrators
+
 networks:
   core:
     external: true
