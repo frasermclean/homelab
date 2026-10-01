@@ -38,6 +38,8 @@ services:
     container_name: cloudflared
     restart: unless-stopped
     command: tunnel --no-autoupdate run
+    networks:
+      - core
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     labels:
