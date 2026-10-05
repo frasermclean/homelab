@@ -8,6 +8,11 @@ services:
     restart: unless-stopped
     volumes:
       - broker-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Database
   database:
@@ -20,6 +25,11 @@ services:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "paperless", "-d", "paperless"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Web server
   server:
@@ -27,8 +37,10 @@ services:
     container_name: paperless-server
     restart: unless-stopped
     depends_on:
-      - database
-      - broker
+      database:
+        condition: service_healthy
+      broker:
+        condition: service_healthy
     volumes:
       - ./data:/usr/src/paperless/data
       - ./media:/usr/src/paperless/media
@@ -48,6 +60,7 @@ services:
       PAPERLESS_SECRET_KEY: ${SECRET_KEY}
     labels:
       - traefik.enable=true
+      - traefik.docker.network=core
       - traefik.http.routers.paperless.rule=Host(`paperless.${DOMAIN}`)
 
 volumes:
@@ -57,5 +70,6 @@ volumes:
 networks:
   default:
     name: paperless
+    internal: true
   core:
     external: true
