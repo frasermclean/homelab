@@ -17,7 +17,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/qbittorrent:/config
+      - ./qbittorrent:/config
       - ${HOST_MEDIA}:/media
     labels:
       - traefik.enable=true
@@ -46,7 +46,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/sabnzbd:/config
+      - ./sabnzbd:/config
       - ${HOST_MEDIA}:/media
     labels:
       - traefik.enable=true
@@ -74,7 +74,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/sonarr:/config
+      - ./sonarr:/config
       - ${HOST_MEDIA}:/media
     depends_on:
       - qbittorrent
@@ -105,7 +105,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/radarr:/config
+      - ./radarr:/config
       - ${HOST_MEDIA}:/media
     depends_on:
       - qbittorrent
@@ -135,7 +135,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/lidarr:/config
+      - ./lidarr:/config
       - ${HOST_MEDIA}:/media
     depends_on:
       - qbittorrent
@@ -165,7 +165,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/prowlarr:/config
+      - ./prowlarr:/config
     depends_on:
       - qbittorrent
       - sabnzbd
@@ -181,32 +181,6 @@ services:
       - homepage.widget.url=http://prowlarr:9696
       - homepage.widget.key=${PROWLARR_API_KEY}
 
-  # Overseerr media discovery and request management
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
-    container_name: overseerr
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    networks:
-      - default
-      - core
-    volumes:
-      - ${HOST_APPDATA}/overseerr:/config
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.overseerr.rule=Host(`overseerr.${DOMAIN}`)
-      - homepage.group=Media
-      - homepage.name=Overseerr
-      - homepage.description=Media request management
-      - homepage.icon=overseerr
-      - homepage.href=https://overseerr.${DOMAIN}
-      - homepage.widget.type=overseerr
-      - homepage.widget.url=http://overseerr:5055
-      - homepage.widget.key=${OVERSEERR_API_KEY}
-
   # Plex media server
   plex:
     image: lscr.io/linuxserver/plex:latest
@@ -219,7 +193,7 @@ services:
       - VERSION=docker
     network_mode: host
     volumes:
-      - ${HOST_APPDATA}/plex:/config
+      - ./plex:/config
       - ${HOST_MEDIA}:/media
     labels:
       - homepage.group=Media
@@ -244,7 +218,7 @@ services:
       - default
       - core
     volumes:
-      - ${HOST_APPDATA}/tautulli:/config
+      - ./tautulli:/config
     labels:
       - traefik.enable=true
       - traefik.http.routers.tautulli.rule=Host(`tautulli.${DOMAIN}`)
