@@ -62,6 +62,14 @@ services:
       - traefik.enable=true
       - traefik.docker.network=core
       - traefik.http.routers.paperless.rule=Host(`paperless.${DOMAIN}`)
+      - homepage.group=Documents
+      - homepage.name=Paperless-ngx
+      - homepage.description=Document management system
+      - homepage.icon=paperless-ngx
+      - homepage.href=https://paperless.${DOMAIN}
+      - homepage.widget.type=paperlessngx
+      - homepage.widget.url=http://paperless-server:8000
+      - homepage.widget.key=${WIDGET_API_KEY}
 
 volumes:
   broker-data:
