@@ -15,7 +15,7 @@ services:
     container_name: paperless-database
     restart: unless-stopped
     volumes:
-      - database-data:/var/lib/postgresql
+      - ./pgdata:/var/lib/postgresql
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
@@ -53,8 +53,6 @@ services:
 volumes:
   broker-data:
     name: paperless-broker
-  database-data:
-    name: paperless-database
 
 networks:
   default:
