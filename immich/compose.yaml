@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_INITDB_ARGS: '--data-checksums'
     volumes:
-      - database-data:/var/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
 
   # Redis compatible cache
   cache:
@@ -39,7 +39,7 @@ services:
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - /etc/localtime:/etc/localtime:ro
-      - server-data:/data
+      - ./data:/data
     networks:
       - default
       - core
@@ -71,15 +71,12 @@ networks:
   default:
     name: immich
     driver: bridge
+    internal: true
   core:
     external: true
 
 volumes:
-  database-data:
-    driver: local
-  server-data:
-    name: immich-server-data
   model-cache:
-    driver: local
+    name: immich-model-cache
   cache-data:
     name: immich-cache-data
