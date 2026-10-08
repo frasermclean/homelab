@@ -11,6 +11,13 @@ services:
       - core
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+      - TUNNEL_METRICS=127.0.0.1:2000
+    healthcheck:
+      test: ["CMD", "cloudflared", "tunnel", "ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     labels:
       - homepage.group=Core
       - homepage.name=Cloudflare Tunnel
