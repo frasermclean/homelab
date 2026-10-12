@@ -93,8 +93,12 @@ services:
       - ./sonarr:/config
       - ${HOST_MEDIA}:/media
     depends_on:
-      - qbittorrent
-      - sabnzbd
+      postgres:
+        condition: service_healthy
+      qbittorrent:
+        condition: service_started
+      sabnzbd:
+        condition: service_started
     labels:
       - traefik.enable=true
       - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
@@ -124,8 +128,12 @@ services:
       - ./radarr:/config
       - ${HOST_MEDIA}:/media
     depends_on:
-      - qbittorrent
-      - sabnzbd
+      postgres:
+        condition: service_healthy
+      qbittorrent:
+        condition: service_started
+      sabnzbd:
+        condition: service_started
     labels:
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
@@ -154,8 +162,12 @@ services:
       - ./lidarr:/config
       - ${HOST_MEDIA}:/media
     depends_on:
-      - qbittorrent
-      - sabnzbd
+      postgres:
+        condition: service_healthy
+      qbittorrent:
+        condition: service_started
+      sabnzbd:
+        condition: service_started
     labels:
       - traefik.enable=true
       - traefik.http.routers.lidarr.rule=Host(`lidarr.${DOMAIN}`)
@@ -183,8 +195,12 @@ services:
     volumes:
       - ./prowlarr:/config
     depends_on:
-      - qbittorrent
-      - sabnzbd
+      postgres:
+        condition: service_healthy
+      qbittorrent:
+        condition: service_started
+      sabnzbd:
+        condition: service_started
     labels:
       - traefik.enable=true
       - traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)
