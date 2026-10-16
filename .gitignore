@@ -8,5 +8,3 @@ core/traefik/logs/
 # Homepage logs - config/logs is still created empty by the image's entrypoint
 core/homepage/logs/
 core/homepage/config/logs/
-# Arcane database and runtime state
-arcane/data/

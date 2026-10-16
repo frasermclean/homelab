@@ -73,7 +73,7 @@ services:
     ports:
       - '3552:3552'
     volumes:
-      - ${DATA_DIRECTORY:?DATA_DIRECTORY must be set}:/app/data
+      - arcane-data:/app/data
       - ${PROJECTS_DIRECTORY:?PROJECTS_DIRECTORY must be set}:${PROJECTS_DIRECTORY:?PROJECTS_DIRECTORY must be set}:z
     environment:
       - PUID=${PUID:?PUID must be set}
@@ -102,3 +102,7 @@ services:
 networks:
   core:
     external: true
+
+volumes:
+  arcane-data:
+    name: arcane-data
