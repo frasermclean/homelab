@@ -1,0 +1,36 @@
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/info-widgets/
+
+- greeting:
+        text_size: 3xl
+        text: Hive Cluster
+
+- logo:
+        icon: /images/roach-carbot-128.png
+
+- datetime:
+        locale: au
+        text_size: xl
+        format:
+              dateStyle: full
+              timeStyle: short
+              #hourCycle: h23
+
+- resources:
+        cpu: true
+        memory: true
+        disk: /
+
+- openmeteo:
+        label: London # optional
+        latitude: 51.5074
+        longitude: -0.1278
+        timezone: "{{HOMEPAGE_VAR_TZ}}" # optional
+        units: metric # or imperial
+        cache: 5 # Time in minutes to cache API responses, to stay within limits
+        format: # optional, Intl.NumberFormat options
+              maximumFractionDigits: 1
+# - unifi_console:
+#     url: https://192.168.1.1
+#     site: Queen
+#     key: "{{HOMEPAGE_VAR_UNIFI_API_KEY}}"

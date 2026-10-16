@@ -4,3 +4,6 @@
 # Traefik runtime state - acme.json holds certificate private keys
 core/traefik/acme.json
 core/traefik/logs/
+
+# Homepage writes its logs into the config folder
+core/homepage/config/logs/

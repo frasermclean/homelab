@@ -1,0 +1,8 @@
+# Services: https://gethomepage.dev/configs/services/
+# {{HOMEPAGE_VAR_*}} placeholders are filled from the container environment
+
+- Core:
+      - Roach ADM:
+            description: NAS administration interface
+            href: https://roach.{{HOMEPAGE_VAR_DOMAIN}}
+            icon: asustor

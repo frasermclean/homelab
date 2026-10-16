@@ -1,0 +1,20 @@
+# General homepage settings: https://gethomepage.dev/configs/settings/
+title: Hive Cluster
+description: Collection of services running on my homelab.
+language: en
+favicon: /images/roach-carbot-128.png
+
+# Appearance settings
+color: slate
+theme: dark
+background:
+  image: /images/background.jpeg
+  opacity: 55
+cardBlur: xs
+statusStyle: dot
+
+# Layout settings
+layout:
+  Core:
+  Media:
+  Downloaders:

@@ -139,6 +139,9 @@ services:
       - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
       - PUID=${PUID}
       - PGID=${PGID}
+      # Values for {{HOMEPAGE_VAR_*}} placeholders in the config files
+      - HOMEPAGE_VAR_DOMAIN=${DOMAIN}
+      - HOMEPAGE_VAR_TZ=${TZ}
     labels:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)
