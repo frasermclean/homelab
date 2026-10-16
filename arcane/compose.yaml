@@ -72,13 +72,13 @@ services:
     ports:
       - '3552:3552'
     volumes:
-      - ./data:/app/data
-      - /share/services:/share/services:z
+      - ${DATA_DIRECTORY:?DATA_DIRECTORY must be set}:/app/data
+      - ${PROJECTS_DIRECTORY:?PROJECTS_DIRECTORY must be set}:${PROJECTS_DIRECTORY:?PROJECTS_DIRECTORY must be set}:z
     environment:
-      - PUID=2000
-      - PGID=100
+      - PUID=${PUID:?PUID must be set}
+      - PGID=${PGID:?PGID must be set}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY must be set}
-      - PROJECTS_DIRECTORY=/share/services
+      - PROJECTS_DIRECTORY=${PROJECTS_DIRECTORY:?PROJECTS_DIRECTORY must be set}
       - DOCKER_HOST=tcp://socket-proxy:2375
     networks:
       - core
