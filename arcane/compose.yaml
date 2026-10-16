@@ -1,11 +1,12 @@
 services:
-  socket-proxy:
+  # Docker socket proxy for Arcane only - Traefik and Homepage use the read-only one in core
+  arcane-socket-proxy:
     image: wollomatic/socket-proxy:1.13.1
-    container_name: socket-proxy
+    container_name: arcane-socket-proxy
     user: '0:0'
     command:
       - '-listenip=0.0.0.0'
-      - '-allowfrom=arcane-manager,arcane-upgrader,traefik,homepage'
+      - '-allowfrom=arcane-manager,arcane-upgrader'
       - '-allowhealthcheck'
       - '-allowGET=(/v[\d.]+)?/_ping'
       - '-allowGET=(/v[\d.]+)?/events(/.*)?'
@@ -79,11 +80,12 @@ services:
       - PGID=${PGID:?PGID must be set}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY must be set}
       - PROJECTS_DIRECTORY=${PROJECTS_DIRECTORY:?PROJECTS_DIRECTORY must be set}
-      - DOCKER_HOST=tcp://socket-proxy:2375
+      - DOCKER_HOST=tcp://arcane-socket-proxy:2375
     networks:
       - core
     depends_on:
-      - socket-proxy
+      arcane-socket-proxy:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', './arcane', 'health', '--timeout', '2s']
       interval: 10s

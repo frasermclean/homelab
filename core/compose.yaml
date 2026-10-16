@@ -1,12 +1,47 @@
 name: core
 
 services:
+  # Read-only Docker socket proxy for Traefik and Homepage - Arcane has its own with write access in the arcane stack
+  socket-proxy:
+    image: wollomatic/socket-proxy:1.13.1
+    container_name: socket-proxy
+    user: '0:0'
+    command:
+      - '-listenip=0.0.0.0'
+      - '-allowfrom=traefik,homepage'
+      - '-allowhealthcheck'
+      - '-allowGET=(/v[\d.]+)?/_ping'
+      - '-allowGET=(/v[\d.]+)?/version'
+      - '-allowGET=(/v[\d.]+)?/info'
+      - '-allowGET=(/v[\d.]+)?/events(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/containers(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/networks(/.*)?'
+      - '-allowHEAD=(/v[\d.]+)?/_ping'
+    networks:
+      - core
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ['CMD', './healthcheck']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
   # Traefik reverse proxy
   traefik:
     image: traefik:v3.7
     container_name: traefik
     restart: unless-stopped
     entrypoint: ['/bin/sh', '/config/entrypoint.sh'] # renders traefik.yml from env vars, then starts Traefik
+    depends_on:
+      socket-proxy:
+        condition: service_healthy
     environment:
       - TZ=${TZ}
       - DOMAIN=${DOMAIN}
@@ -130,6 +165,9 @@ services:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
     restart: unless-stopped
+    depends_on:
+      socket-proxy:
+        condition: service_healthy
     networks:
       - core
     volumes:
