@@ -5,8 +5,8 @@ set -e
 awk '{
   while (match($0, /\$\{[A-Za-z_][A-Za-z0-9_]*\}/)) {
     name = substr($0, RSTART + 2, RLENGTH - 3)
-    if (!(name in ENVIRON)) {
-      print "entrypoint.sh: environment variable " name " is not set" > "/dev/stderr"
+    if (ENVIRON[name] == "") {
+      print "entrypoint.sh: environment variable " name " is not set or empty" > "/dev/stderr"
       exit 1
     }
     $0 = substr($0, 1, RSTART - 1) ENVIRON[name] substr($0, RSTART + RLENGTH)
