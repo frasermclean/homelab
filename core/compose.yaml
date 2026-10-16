@@ -135,6 +135,7 @@ services:
     volumes:
       - ./homepage/config:/app/config
       - ./homepage/images:/app/public/images
+      - ./homepage/logs:/app/logs # must be owned by PUID:PGID
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=${DOMAIN}
       - PUID=${PUID}

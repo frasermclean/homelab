@@ -3,6 +3,7 @@ title: Hive Cluster
 description: Collection of services running on my homelab.
 language: en
 favicon: /images/roach-carbot-128.png
+logpath: /app # logs are written to /app/logs, mounted outside the config folder
 
 # Appearance settings
 color: slate
