@@ -1,0 +1,102 @@
+services:
+  socket-proxy:
+    image: wollomatic/socket-proxy:1.13.1
+    container_name: socket-proxy
+    user: '0:0'
+    command:
+      - '-listenip=0.0.0.0'
+      - '-allowfrom=arcane-manager,arcane-upgrader,traefik,homepage'
+      - '-allowhealthcheck'
+      - '-allowGET=(/v[\d.]+)?/_ping'
+      - '-allowGET=(/v[\d.]+)?/events(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/version'
+      - '-allowGET=(/v[\d.]+)?/info(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/system/df'
+      - '-allowGET=(/v[\d.]+)?/containers(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/exec(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/images(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/networks(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/volumes(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/distribution(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/swarm(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/nodes(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/services(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/tasks(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/secrets(/.*)?'
+      - '-allowGET=(/v[\d.]+)?/configs(/.*)?'
+      - '-allowHEAD=(/v[\d.]+)?/_ping'
+      - '-allowHEAD=(/v[\d.]+)?/version'
+      - '-allowPOST=(/v[\d.]+)?/containers(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/exec(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/images(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/networks(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/volumes(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/commit'
+      - '-allowPOST=(/v[\d.]+)?/build(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/session'
+      - '-allowPOST=(/v[\d.]+)?/grpc'
+      - '-allowPOST=(/v[\d.]+)?/auth'
+      - '-allowPOST=(/v[\d.]+)?/swarm(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/nodes(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/services(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/secrets(/.*)?'
+      - '-allowPOST=(/v[\d.]+)?/configs(/.*)?'
+      - '-allowPUT=(/v[\d.]+)?/containers(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/containers(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/images(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/networks(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/volumes(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/nodes(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/services(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/secrets(/.*)?'
+      - '-allowDELETE=(/v[\d.]+)?/configs(/.*)?'
+    networks:
+      - core
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ['CMD', './healthcheck']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+  manager:
+    image: ghcr.io/getarcaneapp/manager:latest
+    container_name: arcane-manager
+    ports:
+      - '3552:3552'
+    volumes:
+      - ./data:/app/data
+      - /share/services:/share/services:z
+    environment:
+      - PUID=2000
+      - PGID=100
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY must be set}
+      - PROJECTS_DIRECTORY=/share/services
+      - DOCKER_HOST=tcp://socket-proxy:2375
+    networks:
+      - core
+    depends_on:
+      - socket-proxy
+    healthcheck:
+      test: ['CMD', './arcane', 'health', '--timeout', '2s']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.arcane.rule=Host(`arcane.${DOMAIN:?DOMAIN must be set}`)
+      - traefik.http.services.arcane.loadbalancer.server.port=3552
+      - traefik.docker.network=core
+
+networks:
+  core:
+    external: true
