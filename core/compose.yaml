@@ -6,14 +6,19 @@ services:
     image: traefik:v3.7
     container_name: traefik
     restart: unless-stopped
+    entrypoint: ['/bin/sh', '/config/entrypoint.sh'] # renders traefik.yml from env vars, then starts Traefik
     environment:
       - TZ=${TZ}
+      - DOMAIN=${DOMAIN}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - BASIC_AUTH_USER=${BASIC_AUTH_USER}
       - CLOUDFLARE_DNS_API_TOKEN=${CLOUDFLARE_DNS_API_TOKEN}
     ports:
       - 80:80 # HTTP
       - 443:443 # HTTPS
     volumes:
-      - ./traefik/config:/etc/traefik
+      - ./traefik:/config:ro # traefik.yml, dynamic.yml and entrypoint.sh from the repo - a directory mount so file watching picks up changes
+      - ./traefik/acme.json:/etc/traefik/acme.json # must exist with chmod 600 before first start
       - ./traefik/logs:/var/log/traefik
     networks:
       core:

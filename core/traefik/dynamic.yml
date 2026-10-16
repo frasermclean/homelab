@@ -1,0 +1,65 @@
+# Dynamic config - Traefik fills {{ env "..." }} templates from the container environment
+
+http:
+  services:
+    roach-adm:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: http://192.168.1.2:8080
+
+    pve:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: https://192.168.1.5:8006
+          #- url: https://192.168.1.7:8006
+
+    # pbs:
+    #   loadBalancer:
+    #     serversTransport: insecureTransport
+    #     servers:
+    #       - url: https://192.168.4.5:8007
+
+  routers:
+    roach-adm:
+      rule: 'Host(`roach.{{ env "DOMAIN" }}`)'
+      service: roach-adm
+
+    pve:
+      rule: 'Host(`pve.{{ env "DOMAIN" }}`)'
+      service: pve
+      middlewares:
+        - local-ip-whitelist
+
+    # pbs:
+    #   rule: 'Host(`pbs.{{ env "DOMAIN" }}`)'
+    #   service: pbs
+    #   middlewares:
+    #     - local-ip-whitelist
+
+  # allow self-signed certificates for proxied web services
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
+
+  middlewares:
+    local-ip-whitelist:
+      ipAllowList:
+        sourceRange:
+          - 127.0.0.1/32 # localhost
+          - 10.0.0.0/8 # private class A
+          - 172.16.0.0/12 # private class B
+          - 192.168.0.0/16 # private class C
+        #ipStrategy: # https://doc.traefik.io/traefik/v3.5/middlewares/http/ipallowlist/#ipstrategydepth
+        #depth: 1 # get the ip from the X-Forwarded-For header
+
+    basic-auth:
+      basicAuth: # use bcrypt - https://hostingcanada.org/htpasswd-generator/
+        users:
+          - '{{ env "BASIC_AUTH_USER" }}' # user:bcrypt-hash
+
+tls:
+  options:
+    default:
+      sniStrict: true

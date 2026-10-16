@@ -1,2 +1,6 @@
 # Environment variable files
 .env
+
+# Traefik runtime state - acme.json holds certificate private keys
+core/traefik/acme.json
+core/traefik/logs/

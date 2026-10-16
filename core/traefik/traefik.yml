@@ -1,0 +1,95 @@
+# Static config template - entrypoint.sh replaces $-brace placeholders with container environment variables at startup
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+api:
+  dashboard: true
+  insecure: true
+  disableDashboardAd: true
+
+log:
+  level: INFO
+
+accessLog:
+  filePath: /var/log/traefik/access.log
+  format: json
+  filters:
+    statusCodes:
+      - "200-299" # log successful http requests
+      - "400-599" # log failed http requests
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
+
+entryPoints:
+  web:
+    address: :80
+    forwardedHeaders:
+      trustedIPs: &cloudflareIpRanges #https://www.cloudflare.com/en-au/ips/
+        - 173.245.48.0/20
+        - 103.21.244.0/22
+        - 103.22.200.0/22
+        - 103.31.4.0/22
+        - 141.101.64.0/18
+        - 108.162.192.0/18
+        - 190.93.240.0/20
+        - 188.114.96.0/20
+        - 197.234.240.0/22
+        - 198.41.128.0/17
+        - 162.158.0.0/15
+        - 104.16.0.0/13
+        - 104.24.0.0/14
+        - 172.64.0.0/13
+        - 131.0.72.0/22
+        - 2400:cb00::/32
+        - 2606:4700::/32
+        - 2803:f800::/32
+        - 2405:b500::/32
+        - 2405:8100::/32
+        - 2a06:98c0::/29
+        - 2c0f:f248::/32
+    http:
+      aliasHeadersStrategy: delete
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: :443
+    asDefault: true
+    forwardedHeaders:
+      trustedIPs: *cloudflareIpRanges
+    http:
+      aliasHeadersStrategy: delete
+      tls:
+        certResolver: cfdns
+  traefik:
+    address: :7000
+    http:
+      aliasHeadersStrategy: delete
+
+providers:
+  file:
+    filename: /config/dynamic.yml
+    watch: true
+  docker:
+    endpoint: tcp://socket-proxy:2375
+    exposedByDefault: false
+    defaultRule: 'Host(`{{ index .Labels "com.docker.compose.service"}}.${DOMAIN}`)'
+    network: core
+    watch: true
+
+certificatesResolvers:
+  cfdns:
+    acme:
+      email: ${ADMIN_EMAIL}
+      storage: /etc/traefik/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - 1.1.1.1:53
+          - 1.0.0.1:53
