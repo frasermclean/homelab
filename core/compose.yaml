@@ -1,22 +1,17 @@
 name: core
 
 services:
-  # Read-only Docker socket proxy for Traefik and Homepage - Arcane has its own with write access in the arcane stack
+  # Read-only Docker socket proxy for Traefik and Homepage
   socket-proxy:
     image: wollomatic/socket-proxy:1.13.1
     container_name: socket-proxy
     user: '0:0'
-    command:
-      - '-listenip=0.0.0.0'
-      - '-allowfrom=traefik,homepage'
-      - '-allowhealthcheck'
-      - '-allowGET=(/v[\d.]+)?/_ping'
-      - '-allowGET=(/v[\d.]+)?/version'
-      - '-allowGET=(/v[\d.]+)?/info'
-      - '-allowGET=(/v[\d.]+)?/events(/.*)?'
-      - '-allowGET=(/v[\d.]+)?/containers(/.*)?'
-      - '-allowGET=(/v[\d.]+)?/networks(/.*)?'
-      - '-allowHEAD=(/v[\d.]+)?/_ping'
+    environment:
+      SP_LISTENIP: 0.0.0.0
+      SP_ALLOWFROM: traefik,homepage
+      SP_ALLOWHEALTHCHECK: 'true'
+      SP_ALLOW_GET: '(/v[\d.]+)?/(_ping|version|info|(events|containers|networks)(/.*)?)'
+      SP_ALLOW_HEAD: '(/v[\d.]+)?/_ping'
     networks:
       - core
     volumes:
@@ -84,7 +79,7 @@ services:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
       - TUNNEL_METRICS=127.0.0.1:2000
     healthcheck:
-      test: ["CMD", "cloudflared", "tunnel", "ready"]
+      test: ['CMD', 'cloudflared', 'tunnel', 'ready']
       interval: 30s
       timeout: 10s
       retries: 3
