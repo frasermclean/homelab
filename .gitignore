@@ -8,3 +8,7 @@ core/traefik/logs/
 # Homepage logs - config/logs is still created empty by the image's entrypoint
 core/homepage/logs/
 core/homepage/config/logs/
+
+# Immich photo library and database
+immich/data/
+immich/pgdata/

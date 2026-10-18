@@ -37,9 +37,8 @@ services:
       - DB_DATABASE_NAME=${POSTGRES_DB}
       - REDIS_HOSTNAME=immich-cache
     volumes:
-      - ${UPLOAD_LOCATION}:/usr/src/app/upload
-      - /etc/localtime:/etc/localtime:ro
       - ./data:/data
+      - /etc/localtime:/etc/localtime:ro
     networks:
       - default
       - core
