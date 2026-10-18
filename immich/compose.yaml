@@ -13,6 +13,7 @@ services:
       POSTGRES_INITDB_ARGS: '--data-checksums'
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+    shm_size: 128mb # Docker's 64MB default is too small for large vector search queries
 
   # Redis compatible cache
   cache:
@@ -26,7 +27,7 @@ services:
 
   # Immich server
   server:
-    image: ghcr.io/immich-app/immich-server:release
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     container_name: immich-server
     restart: unless-stopped
     environment:
@@ -38,7 +39,8 @@ services:
       - REDIS_HOSTNAME=immich-cache
     volumes:
       - ./data:/data
-      - ${HOST_MEDIA}/photos:/data/library
+      - ${HOST_BACKUP:?HOST_BACKUP must be set}/immich:/data/backups
+      - ${HOST_MEDIA:?HOST_MEDIA must be set}/photos:/data/library
       - /etc/localtime:/etc/localtime:ro
     networks:
       - default
@@ -61,7 +63,7 @@ services:
 
   # Immich machine learning service
   machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:release
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     container_name: immich-machine-learning
     restart: unless-stopped
     volumes:
@@ -71,7 +73,6 @@ networks:
   default:
     name: immich
     driver: bridge
-    internal: true
   core:
     external: true
 
