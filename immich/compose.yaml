@@ -38,6 +38,7 @@ services:
       - REDIS_HOSTNAME=immich-cache
     volumes:
       - ./data:/data
+      - ${HOST_MEDIA}/photos:/data/library
       - /etc/localtime:/etc/localtime:ro
     networks:
       - default
