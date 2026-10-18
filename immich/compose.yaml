@@ -30,6 +30,11 @@ services:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     container_name: immich-server
     restart: unless-stopped
+    user: ${PUID:?PUID must be set}:${PGID:?PGID must be set}
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - NET_RAW
     environment:
       - TZ=${TZ}
       - DB_HOSTNAME=immich-database
@@ -66,8 +71,13 @@ services:
     image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
     container_name: immich-machine-learning
     restart: unless-stopped
+    user: ${PUID:?PUID must be set}:${PGID:?PGID must be set}
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - NET_RAW
     volumes:
-      - model-cache:/cache
+      - ./model-cache:/cache # bind mount - named volumes are created root-owned
 
 networks:
   default:
@@ -77,7 +87,5 @@ networks:
     external: true
 
 volumes:
-  model-cache:
-    name: immich-model-cache
   cache-data:
     name: immich-cache-data

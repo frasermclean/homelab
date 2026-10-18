@@ -12,3 +12,4 @@ core/homepage/config/logs/
 # Immich photo library and database
 immich/data/
 immich/pgdata/
+immich/model-cache/
