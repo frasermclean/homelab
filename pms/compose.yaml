@@ -129,6 +129,14 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - RADARR__AUTH__APIKEY=${RADARR_API_KEY}
+      - RADARR__AUTH__METHOD=Forms
+      - RADARR__POSTGRES__HOST=pms-postgres
+      - RADARR__POSTGRES__USER=radarr
+      - RADARR__POSTGRES__PASSWORD=${RADARR_POSTGRES_PASSWORD}
+      - RADARR__POSTGRES__MAINDB=radarr_main
+      - RADARR__POSTGRES__LOGDB=radarr_log
+      - RADARR__UPDATE__MECHANISM=Docker
     networks:
       - default
       - core
@@ -163,6 +171,14 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - LIDARR__AUTH__APIKEY=${LIDARR_API_KEY}
+      - LIDARR__AUTH__METHOD=Forms
+      - LIDARR__POSTGRES__HOST=pms-postgres
+      - LIDARR__POSTGRES__USER=lidarr
+      - LIDARR__POSTGRES__PASSWORD=${LIDARR_POSTGRES_PASSWORD}
+      - LIDARR__POSTGRES__MAINDB=lidarr_main
+      - LIDARR__POSTGRES__LOGDB=lidarr_log
+      - LIDARR__UPDATE__MECHANISM=Docker
     networks:
       - default
       - core
@@ -197,6 +213,14 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - PROWLARR__AUTH__APIKEY=${PROWLARR_API_KEY}
+      - PROWLARR__AUTH__METHOD=Forms
+      - PROWLARR__POSTGRES__HOST=pms-postgres
+      - PROWLARR__POSTGRES__USER=prowlarr
+      - PROWLARR__POSTGRES__PASSWORD=${PROWLARR_POSTGRES_PASSWORD}
+      - PROWLARR__POSTGRES__MAINDB=prowlarr_main
+      - PROWLARR__POSTGRES__LOGDB=prowlarr_log
+      - PROWLARR__UPDATE__MECHANISM=Docker
     networks:
       - default
       - core
