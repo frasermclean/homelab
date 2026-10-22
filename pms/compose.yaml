@@ -86,6 +86,14 @@ services:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+      - SONARR__AUTH__APIKEY=${SONARR_API_KEY}
+      - SONARR__AUTH__METHOD=Forms
+      - SONARR__POSTGRES__HOST=pms-postgres
+      - SONARR__POSTGRES__USER=sonarr
+      - SONARR__POSTGRES__PASSWORD=${SONARR_POSTGRES_PASSWORD}
+      - SONARR__POSTGRES__MAINDB=sonarr_main
+      - SONARR__POSTGRES__LOGDB=sonarr_log
+      - SONARR__UPDATE__MECHANISM=Docker
     networks:
       - default
       - core
@@ -212,30 +220,6 @@ services:
       - homepage.widget.type=prowlarr
       - homepage.widget.url=http://prowlarr:9696
       - homepage.widget.key=${PROWLARR_API_KEY}
-
-  # Plex media server
-  plex:
-    image: lscr.io/linuxserver/plex:latest
-    container_name: plex
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - VERSION=docker
-    network_mode: host
-    volumes:
-      - ./plex:/config
-      - ${HOST_MEDIA}:/media
-    labels:
-      - homepage.group=Media
-      - homepage.name=Plex
-      - homepage.description=Media server
-      - homepage.icon=plex
-      - homepage.href=https://plex.${DOMAIN}
-      - homepage.widget.type=plex
-      - homepage.widget.url=http://192.168.1.2:32400
-      - homepage.widget.key=${PLEX_SERVER_TOKEN}
 
   # Tautulli media server monitoring
   tautulli:
