@@ -7,20 +7,34 @@ http:
       loadBalancer:
         serversTransport: insecureTransport
         servers:
-          - url: http://192.168.1.2:8080
+          - url: http://roach.{{ env "DOMAIN" }}:8080
 
     pve:
       loadBalancer:
+        servers:
+          - url: https://lurker.{{ env "DOMAIN" }}:8006
+          - url: https://infestor.{{ env "DOMAIN" }}:8006
+        sticky:
+          cookie:
+            name: pve_sticky
+            secure: true
+            httpOnly: true
+        healthCheck:
+          path: /
+          interval: 10s
+          timeout: 3s
+
+    plex:
+      loadBalancer:
         serversTransport: insecureTransport
         servers:
-          - url: https://192.168.1.5:8006
-          #- url: https://192.168.1.7:8006
+          - url: http://192.168.1.7:32400
 
-    # pbs:
-    #   loadBalancer:
-    #     serversTransport: insecureTransport
-    #     servers:
-    #       - url: https://192.168.4.5:8007
+    pbs:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: https://192.168.4.5:8007
 
   routers:
     roach-adm:
@@ -33,11 +47,15 @@ http:
       middlewares:
         - local-ip-whitelist
 
-    # pbs:
-    #   rule: 'Host(`pbs.{{ env "DOMAIN" }}`)'
-    #   service: pbs
-    #   middlewares:
-    #     - local-ip-whitelist
+    pbs:
+      rule: 'Host(`pbs.{{ env "DOMAIN" }}`)'
+      service: pbs
+      middlewares:
+        - local-ip-whitelist
+
+    plex:
+      rule: 'Host(`plex.{{ env "DOMAIN" }}`)'
+      service: plex
 
   # allow self-signed certificates for proxied web services
   serversTransports:
