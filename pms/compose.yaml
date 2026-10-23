@@ -308,6 +308,41 @@ services:
     cap_drop:
       - ALL
 
+  # Prunerr media library cleanup
+  prunerr:
+    image: helliott20/prunerr:latest
+    container_name: prunerr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - PLEX_URL=http://192.168.1.7:32400
+      - PLEX_TOKEN=${PLEX_TOKEN}
+      - SONARR_URL=http://sonarr:8989
+      - SONARR_API_KEY=${SONARR_API_KEY}
+      - RADARR_URL=http://radarr:7878
+      - RADARR_API_KEY=${RADARR_API_KEY}
+      - TAUTULLI_URL=http://tautulli:8181
+      - TAUTULLI_API_KEY=${TAUTULLI_API_KEY}
+      - OVERSEERR_URL=http://seerr:5055
+      - OVERSEERR_API_KEY=${SEERR_API_KEY}
+    networks:
+      - default
+      - core
+    volumes:
+      - ./prunerr:/app/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prunerr.rule=Host(`prunerr.${DOMAIN}`)
+      - traefik.http.services.prunerr.loadbalancer.server.port=3000
+      - homepage.group=Media
+      - homepage.name=Prunerr
+      - homepage.description=Media library cleanup
+      - homepage.icon=prunerr
+      - homepage.href=https://prunerr.${DOMAIN}
+    security_opt:
+      - no-new-privileges
+
 networks:
   default:
     name: pms
