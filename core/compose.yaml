@@ -176,6 +176,7 @@ services:
       # Values for {{HOMEPAGE_VAR_*}} placeholders in the config files
       - HOMEPAGE_VAR_DOMAIN=${DOMAIN}
       - HOMEPAGE_VAR_TZ=${TZ}
+      - HOMEPAGE_VAR_PLEX_TOKEN=${PLEX_TOKEN}
     labels:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`${DOMAIN}`)

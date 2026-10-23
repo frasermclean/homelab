@@ -2,7 +2,17 @@
 # {{HOMEPAGE_VAR_*}} placeholders are filled from the container environment
 
 - Core:
-      - Roach ADM:
-            description: NAS administration interface
-            href: https://roach.{{HOMEPAGE_VAR_DOMAIN}}
-            icon: asustor
+    - Roach ADM:
+        description: NAS administration interface
+        href: https://roach.{{HOMEPAGE_VAR_DOMAIN}}
+        icon: asustor
+
+- Media:
+    - Plex:
+        description: Media server
+        href: https://plex.{{HOMEPAGE_VAR_DOMAIN}}
+        icon: plex
+        widget:
+          type: plex
+          url: https://plex.{{HOMEPAGE_VAR_DOMAIN}}
+          key: "{{HOMEPAGE_VAR_PLEX_TOKEN}}"
