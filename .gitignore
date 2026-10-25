@@ -13,3 +13,6 @@ core/homepage/config/logs/
 immich/data/
 immich/pgdata/
 immich/model-cache/
+
+# Private infrastructure notes - keep out of the public repo
+docs/
