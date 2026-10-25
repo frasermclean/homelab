@@ -7,6 +7,26 @@
         href: https://roach.{{HOMEPAGE_VAR_DOMAIN}}
         icon: asustor
 
+    - Proxmox VE:
+        description: Virtualisation cluster
+        href: https://pve.{{HOMEPAGE_VAR_DOMAIN}}
+        icon: proxmox
+        widget:
+          type: proxmox
+          url: https://pve.{{HOMEPAGE_VAR_DOMAIN}}
+          username: "{{HOMEPAGE_VAR_PVE_TOKEN_ID}}"
+          password: "{{HOMEPAGE_VAR_PVE_TOKEN_SECRET}}"
+
+    - Proxmox Backup Server:
+        description: VM and container backups
+        href: https://pbs.{{HOMEPAGE_VAR_DOMAIN}}
+        icon: proxmox
+        widget:
+          type: proxmoxbackupserver
+          url: https://pbs.{{HOMEPAGE_VAR_DOMAIN}}
+          username: "{{HOMEPAGE_VAR_PBS_TOKEN_ID}}"
+          password: "{{HOMEPAGE_VAR_PBS_TOKEN_SECRET}}"
+
 - Media:
     - Plex:
         description: Media server
