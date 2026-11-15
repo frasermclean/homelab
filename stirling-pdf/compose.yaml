@@ -8,7 +8,7 @@ services:
     ports:
       - '8080:8080'
     environment:
-      SYSTEM_DEFAULTLOCALE: en_GB
+      SYSTEM_DEFAULTLOCALE: en-GB
       SYSTEM_FRONTENDURL: https://pdf.${DOMAIN}
       SECURITY_ENABLELOGIN: true
       SECURITY_INITIALLOGIN_USERNAME: ${INITIAL_USERNAME}
