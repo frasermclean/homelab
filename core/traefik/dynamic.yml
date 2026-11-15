@@ -40,7 +40,7 @@ http:
       loadBalancer:
         serversTransport: insecureTransport
         servers:
-          - url: http://pdf.{{ env "DOMAIN" }}:8080
+          - url: http://192.168.4.10:8080
 
   routers:
     roach-adm:
