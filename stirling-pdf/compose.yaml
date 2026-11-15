@@ -1,0 +1,23 @@
+name: stirling-pdf
+
+services:
+  stirling-pdf:
+    image: docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest
+    container_name: stirling-pdf
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      SYSTEM_DEFAULTLOCALE: en_GB
+      SYSTEM_FRONTENDURL: https://pdf.${DOMAIN}
+      SECURITY_ENABLELOGIN: true
+      SECURITY_INITIALLOGIN_USERNAME: ${INITIAL_USERNAME}
+      SECURITY_INITIALLOGIN_PASSWORD: ${INITIAL_PASSWORD}
+    volumes:
+      - ./configs:/configs
+      - ./logs:/logs
+      - ./customFiles:/customFiles
+      - ./pipeline:/pipeline
+      - ./storage:/storage
+      - ./tessdata:/usr/share/tessdata
+    mem_limit: 4g
