@@ -36,6 +36,12 @@ http:
         servers:
           - url: https://192.168.4.5:8007
 
+    pdf:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: http://pdf.{{ env "DOMAIN" }}:8080
+
   routers:
     roach-adm:
       rule: 'Host(`roach.{{ env "DOMAIN" }}`)'
@@ -56,6 +62,10 @@ http:
     plex:
       rule: 'Host(`plex.{{ env "DOMAIN" }}`)'
       service: plex
+
+    pdf:
+      rule: 'Host(`pdf.{{ env "DOMAIN" }}`)'
+      service: pdf
 
   # allow self-signed certificates for proxied web services
   serversTransports:
