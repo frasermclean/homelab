@@ -14,10 +14,29 @@ services:
       SECURITY_INITIALLOGIN_USERNAME: ${INITIAL_USERNAME}
       SECURITY_INITIALLOGIN_PASSWORD: ${INITIAL_PASSWORD}
     volumes:
-      - ./configs:/configs
-      - ./logs:/logs
-      - ./customFiles:/customFiles
-      - ./pipeline:/pipeline
-      - ./storage:/storage
-      - ./tessdata:/usr/share/tessdata
+      - configs:/configs
+      - logs:/logs
+      - customFiles:/customFiles
+      - pipeline:/pipeline
+      - storage:/storage
+      - tessdata:/usr/share/tessdata
     mem_limit: 4g
+
+networks:
+  default:
+    driver: bridge
+    name: stirling-pdf
+
+volumes:
+  configs:
+    name: stirling-pdf-configs
+  logs:
+    name: stirling-pdf-logs
+  customFiles:
+    name: stirling-pdf-customFiles
+  pipeline:
+    name: stirling-pdf-pipeline
+  storage:
+    name: stirling-pdf-storage
+  tessdata:
+    name: stirling-pdf-tessdata
